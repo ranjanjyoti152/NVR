@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playback - Network Video Recorder</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#007AFF',
+                        'secondary': '#5856D6',
+                        'success': '#34C759',
+                        'danger': '#FF3B30',
+                        'warning': '#FF9500',
+                        'info': '#5AC8FA',
+                        'dark': '#1C1C1E',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F2F2F7;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .timeline {
+            height: 4px;
+            background: #E5E7EB;
+            position: relative;
+            cursor: pointer;
+        }
+        .timeline-progress {
+            position: absolute;
+            height: 100%;
+            background: #007AFF;
+            left: 0;
+            width: 30%;
+        }
+        .timeline-handle {
+            width: 12px;
+            height: 12px;
+            background: #007AFF;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 30%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect fixed w-full z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-2xl font-semibold text-primary">NVR</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="index.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-home mr-2"></i> Dashboard
+                        </a>
+                        <a href="live-stream.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-video mr-2"></i> Live Stream
+                        </a>
+                        <a href="playback.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-play-circle mr-2"></i> Playback
+                        </a>
+                        <a href="settings.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button type="button" class="bg-primary p-2 rounded-full text-white hover:opacity-90 focus:outline-none">
+                        <span class="sr-only">Calendar</span>
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <button type="button" class="bg-primary p-2 rounded-full text-white hover:opacity-90 focus:outline-none">
+                        <span class="sr-only">View notifications</span>
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900">Video Playback</h1>
+                <div class="flex space-x-3">
+                    <div class="relative">
+                        <input type="date" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" placeholder="Select date">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                        </div>
+                    </div>
+                    <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
+                        <i class="fas fa-download mr-2"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Video Player Section -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <!-- Video Player -->
+                        <div class="relative aspect-video bg-gray-900">
+                            <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
+                                 alt="Playback Video"
+                                 class="w-full h-full object-cover">
+                            <!-- Play Button Overlay -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <button class="w-16 h-16 bg-primary/90 rounded-full flex items-center justify-center text-white hover:bg-primary focus:outline-none">
+                                    <i class="fas fa-play text-xl"></i>
+                                </button>
+                            </div>
+                            <!-- Time Display -->
+                            <div class="absolute bottom-4 left-4 bg-black/50 rounded px-2 py-1">
+                                <span class="text-white text-sm">00:00:00 / 02:30:00</span>
+                            </div>
+                        </div>
+
+                        <!-- Video Controls -->
+                        <div class="p-4">
+                            <!-- Timeline -->
+                            <div class="timeline mb-4">
+                                <div class="timeline-progress"></div>
+                                <div class="timeline-handle"></div>
+                            </div>
+
+                            <!-- Control Buttons -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <button class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-step-backward"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-step-forward"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <button class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-closed-captioning"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recording Details -->
+                    <div class="mt-6 bg-white rounded-xl shadow-sm p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recording Details</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Camera</p>
+                                <p class="text-gray-900">Front Door Camera</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Date</p>
+                                <p class="text-gray-900">October 10, 2023</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Duration</p>
+                                <p class="text-gray-900">2h 30m</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">File Size</p>
+                                <p class="text-gray-900">1.2 GB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recordings List -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Recordings</h2>
+                            <button class="text-primary hover:text-primary/90">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+
+                        <!-- Recording Items -->
+                        <div class="space-y-4">
+                            <!-- Active Recording -->
+                            <div class="bg-primary/5 border-l-4 border-primary p-3 rounded-lg">
+                                <div class="flex items-start">
+                                    <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
+                                         alt="Recording Thumbnail" 
+                                         class="w-20 h-12 object-cover rounded">
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="text-sm font-medium text-gray-900">Front Door</h3>
+                                        <p class="text-xs text-gray-500">Oct 10, 2023 - 14:30</p>
+                                        <p class="text-xs text-gray-500">2h 30m</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Other Recordings -->
+                            <div class="hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                                <div class="flex items-start">
+                                    <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
+                                         alt="Recording Thumbnail" 
+                                         class="w-20 h-12 object-cover rounded">
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="text-sm font-medium text-gray-900">Back Yard</h3>
+                                        <p class="text-xs text-gray-500">Oct 10, 2023 - 12:00</p>
+                                        <p class="text-xs text-gray-500">1h 45m</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                                <div class="flex items-start">
+                                    <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
+                                         alt="Recording Thumbnail" 
+                                         class="w-20 h-12 object-cover rounded">
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="text-sm font-medium text-gray-900">Garage</h3>
+                                        <p class="text-xs text-gray-500">Oct 10, 2023 - 09:15</p>
+                                        <p class="text-xs text-gray-500">2h 15m</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Load More Button -->
+                        <button class="mt-4 w-full py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                            Load More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-8">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="text-gray-500 text-sm">
+                    © 2023 Network Video Recorder. All rights reserved.
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-gray-700">
+                        <span class="sr-only">Privacy Policy</span>
+                        <i class="fas fa-shield-alt"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-gray-700">
+                        <span class="sr-only">Support</span>
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
