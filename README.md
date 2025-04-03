@@ -54,8 +54,8 @@ A modern, web-based Network Video Recorder system with an Apple-style user inter
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/nvr-system.git
-cd nvr-system
+git clone https://github.com/ranjanjyoti152/NVR.git
+cd NVR
 ```
 
 2. Start a local server:
@@ -85,11 +85,7 @@ The NVR system is optimized for modern browsers:
 - Backend API integration
 - Real-time notifications via WebSocket
 - User authentication and access control
-- Mobile app support
 - Advanced motion detection algorithms
-- Cloud storage integration
-- AI-powered object detection
-- Custom alert rules
 
 ## Contributing
 
@@ -103,9 +99,3 @@ The NVR system is optimized for modern browsers:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
-- Design inspired by Apple's Human Interface Guidelines
-- Icons provided by Font Awesome
-- Typography by Google Fonts
-- Demo images from Pexels
