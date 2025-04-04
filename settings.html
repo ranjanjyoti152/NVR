@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script>
+    <script type="module">
         tailwind.config = {
             theme: {
                 extend: {
@@ -76,7 +76,9 @@
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-semibold text-gray-900">Settings</h1>
-                <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
+                <button data-action="save" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none opacity-50 cursor-not-allowed"
+                        disabled>
                     <i class="fas fa-save mr-2"></i>
                     Save Changes
                 </button>
@@ -93,7 +95,7 @@
                         <!-- Camera List -->
                         <div class="space-y-6">
                             <!-- Camera 1 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="border border-gray-200 rounded-lg p-4" data-camera-id="camera-1">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
                                         <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -104,7 +106,7 @@
                                             <p class="text-sm text-success">Connected</p>
                                         </div>
                                     </div>
-                                    <button class="text-gray-400 hover:text-gray-500">
+                                    <button class="text-gray-400 hover:text-gray-500" data-action="camera-menu">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                 </div>
@@ -112,7 +114,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Resolution</label>
-                                        <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                        <select data-setting="resolution" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                             <option>1080p</option>
                                             <option>720p</option>
                                             <option>480p</option>
@@ -120,7 +122,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Frame Rate</label>
-                                        <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                        <select data-setting="frame-rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                             <option>30 fps</option>
                                             <option>24 fps</option>
                                             <option>15 fps</option>
@@ -130,7 +132,7 @@
                                         <label class="block text-sm font-medium text-gray-700">Motion Detection</label>
                                         <div class="mt-1">
                                             <label class="inline-flex items-center">
-                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked>
+                                                <input type="checkbox" data-setting="motion-detection" class="rounded border-gray-300 text-primary focus:ring-primary" checked>
                                                 <span class="ml-2 text-sm text-gray-600">Enable</span>
                                             </label>
                                         </div>
@@ -139,7 +141,7 @@
                                         <label class="block text-sm font-medium text-gray-700">Audio Recording</label>
                                         <div class="mt-1">
                                             <label class="inline-flex items-center">
-                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                                <input type="checkbox" data-setting="audio-recording" class="rounded border-gray-300 text-primary focus:ring-primary">
                                                 <span class="ml-2 text-sm text-gray-600">Enable</span>
                                             </label>
                                         </div>
@@ -148,7 +150,7 @@
                             </div>
 
                             <!-- Camera 2 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="border border-gray-200 rounded-lg p-4" data-camera-id="camera-2">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
                                         <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -159,7 +161,7 @@
                                             <p class="text-sm text-success">Connected</p>
                                         </div>
                                     </div>
-                                    <button class="text-gray-400 hover:text-gray-500">
+                                    <button class="text-gray-400 hover:text-gray-500" data-action="camera-menu">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                 </div>
@@ -167,7 +169,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Resolution</label>
-                                        <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                        <select data-setting="resolution" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                             <option>1080p</option>
                                             <option>720p</option>
                                             <option>480p</option>
@@ -175,7 +177,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Frame Rate</label>
-                                        <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                        <select data-setting="frame-rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                             <option>30 fps</option>
                                             <option>24 fps</option>
                                             <option>15 fps</option>
@@ -185,7 +187,7 @@
                                         <label class="block text-sm font-medium text-gray-700">Motion Detection</label>
                                         <div class="mt-1">
                                             <label class="inline-flex items-center">
-                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked>
+                                                <input type="checkbox" data-setting="motion-detection" class="rounded border-gray-300 text-primary focus:ring-primary" checked>
                                                 <span class="ml-2 text-sm text-gray-600">Enable</span>
                                             </label>
                                         </div>
@@ -194,7 +196,7 @@
                                         <label class="block text-sm font-medium text-gray-700">Audio Recording</label>
                                         <div class="mt-1">
                                             <label class="inline-flex items-center">
-                                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                                <input type="checkbox" data-setting="audio-recording" class="rounded border-gray-300 text-primary focus:ring-primary">
                                                 <span class="ml-2 text-sm text-gray-600">Enable</span>
                                             </label>
                                         </div>
@@ -211,15 +213,15 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Storage Location</label>
                                 <div class="mt-1 flex rounded-md shadow-sm">
-                                    <input type="text" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 focus:ring-primary focus:border-primary" value="/recordings">
-                                    <button class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm">
+                                    <input type="text" data-setting="storage-location" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 focus:ring-primary focus:border-primary" value="/recordings">
+                                    <button data-action="browse" class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm">
                                         Browse
                                     </button>
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Storage Limit</label>
-                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                <select data-setting="storage-limit" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                     <option>500 GB</option>
                                     <option>1 TB</option>
                                     <option>2 TB</option>
@@ -228,7 +230,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Retention Period</label>
-                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                <select data-setting="retention-period" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                     <option>7 days</option>
                                     <option>14 days</option>
                                     <option>30 days</option>
@@ -237,10 +239,10 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Recording Schedule</label>
-                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
+                                <select data-setting="recording-schedule" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
                                     <option>24/7</option>
                                     <option>Motion Detection Only</option>
-                                    <option>Custom Schedule</option>
+                                    <option value="custom">Custom Schedule</option>
                                 </select>
                             </div>
                         </div>
@@ -259,7 +261,7 @@
                                     <p class="text-sm text-gray-500">Get notified when motion is detected</p>
                                 </div>
                                 <label class="relative inline-flex items-center">
-                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <input type="checkbox" data-notification="motion" class="sr-only peer" checked>
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                 </label>
                             </div>
@@ -269,7 +271,7 @@
                                     <p class="text-sm text-gray-500">Alert when camera goes offline</p>
                                 </div>
                                 <label class="relative inline-flex items-center">
-                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <input type="checkbox" data-notification="camera-status" class="sr-only peer" checked>
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                 </label>
                             </div>
@@ -279,7 +281,7 @@
                                     <p class="text-sm text-gray-500">Notify when storage is nearly full</p>
                                 </div>
                                 <label class="relative inline-flex items-center">
-                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <input type="checkbox" data-notification="storage" class="sr-only peer" checked>
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                 </label>
                             </div>
@@ -290,15 +292,15 @@
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h2 class="text-lg font-semibold text-gray-900 mb-4">System Maintenance</h2>
                         <div class="space-y-4">
-                            <button class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <button data-action="check-updates" class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                                 <span>Check for Updates</span>
                                 <i class="fas fa-arrow-right"></i>
                             </button>
-                            <button class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <button data-action="backup" class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                                 <span>Backup Settings</span>
                                 <i class="fas fa-download"></i>
                             </button>
-                            <button class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <button data-action="view-logs" class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                                 <span>System Logs</span>
                                 <i class="fas fa-external-link-alt"></i>
                             </button>
@@ -339,5 +341,24 @@
             </div>
         </div>
     </footer>
+
+    <!-- Custom Schedule Modal -->
+    <div id="custom-schedule-container" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium">Custom Recording Schedule</h3>
+                <button class="text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <!-- Schedule inputs would go here -->
+                <p class="text-gray-500">Schedule configuration coming soon...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script type="module" src="js/settings.js"></script>
 </body>
 </html>

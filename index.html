@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script>
+    <script type="module">
         tailwind.config = {
             theme: {
                 extend: {
@@ -83,22 +83,22 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- System Status Card -->
                 <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-4" data-status="card">
                         <h2 class="text-lg font-semibold text-gray-900">System Status</h2>
-                        <span class="px-3 py-1 bg-success bg-opacity-10 text-success rounded-full text-sm">Active</span>
+                        <span class="px-3 py-1 bg-success bg-opacity-10 text-success rounded-full text-sm" data-status="system-badge">Active</span>
                     </div>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">CPU Usage</span>
-                            <span class="text-gray-900">32%</span>
+                            <span class="text-gray-900" data-status="cpu-usage">--</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Memory Usage</span>
-                            <span class="text-gray-900">2.4 GB</span>
+                            <span class="text-gray-900" data-status="memory-usage">--</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Storage</span>
-                            <span class="text-gray-900">456 GB Free</span>
+                            <span class="text-gray-900" data-status="storage">--</span>
                         </div>
                     </div>
                 </div>
@@ -109,11 +109,11 @@
                         <h2 class="text-lg font-semibold text-gray-900">Active Cameras</h2>
                         <span class="text-primary"><i class="fas fa-video"></i></span>
                     </div>
-                    <div class="text-3xl font-bold text-gray-900 mb-2">4</div>
-                    <div class="text-sm text-gray-600">Out of 6 total cameras</div>
+                    <div class="text-3xl font-bold text-gray-900 mb-2" data-cameras="active-count">--</div>
+                    <div class="text-sm text-gray-600">Out of <span data-cameras="total-count">--</span> total cameras</div>
                     <div class="mt-4">
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-primary rounded-full h-2" style="width: 66%"></div>
+                            <div class="bg-primary rounded-full h-2" data-cameras="progress-bar" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
@@ -124,20 +124,10 @@
                         <h2 class="text-lg font-semibold text-gray-900">Recent Events</h2>
                         <span class="text-primary"><i class="fas fa-bell"></i></span>
                     </div>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-3">
-                            <span class="text-warning"><i class="fas fa-exclamation-triangle"></i></span>
-                            <div>
-                                <p class="text-sm text-gray-900">Motion Detected - Front Door</p>
-                                <p class="text-xs text-gray-500">2 minutes ago</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <span class="text-danger"><i class="fas fa-times-circle"></i></span>
-                            <div>
-                                <p class="text-sm text-gray-900">Camera 3 Offline</p>
-                                <p class="text-xs text-gray-500">15 minutes ago</p>
-                            </div>
+                    <div class="space-y-4" data-events="container">
+                        <!-- Events will be dynamically inserted here -->
+                        <div class="flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         </div>
                     </div>
                 </div>
@@ -149,53 +139,10 @@
                             <h2 class="text-lg font-semibold text-gray-900">Camera Feeds</h2>
                             <a href="live-stream.html" class="text-primary hover:underline text-sm">View All</a>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- Camera Feed 1 -->
-                            <div class="relative rounded-lg overflow-hidden bg-gray-100 aspect-video">
-                                <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                                     alt="Front Door Camera" 
-                                     class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-white text-sm font-medium">Front Door</span>
-                                        <span class="flex items-center">
-                                            <span class="w-2 h-2 bg-success rounded-full mr-1"></span>
-                                            <span class="text-white text-xs">Live</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Camera Feed 2 -->
-                            <div class="relative rounded-lg overflow-hidden bg-gray-100 aspect-video">
-                                <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                                     alt="Back Yard Camera" 
-                                     class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-white text-sm font-medium">Back Yard</span>
-                                        <span class="flex items-center">
-                                            <span class="w-2 h-2 bg-success rounded-full mr-1"></span>
-                                            <span class="text-white text-xs">Live</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Camera Feed 3 -->
-                            <div class="relative rounded-lg overflow-hidden bg-gray-100 aspect-video">
-                                <div class="absolute inset-0 flex items-center justify-center bg-gray-200">
-                                    <i class="fas fa-video-slash text-4xl text-gray-400"></i>
-                                </div>
-                                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-white text-sm font-medium">Garage</span>
-                                        <span class="flex items-center">
-                                            <span class="w-2 h-2 bg-danger rounded-full mr-1"></span>
-                                            <span class="text-white text-xs">Offline</span>
-                                        </span>
-                                    </div>
-                                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-camera-feeds="grid">
+                            <!-- Camera feeds will be dynamically inserted here -->
+                            <div class="flex items-center justify-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
                         </div>
                     </div>
@@ -224,5 +171,7 @@
             </div>
         </div>
     </footer>
+    <!-- JavaScript -->
+    <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>

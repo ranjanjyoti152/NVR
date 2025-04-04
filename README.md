@@ -1,101 +1,103 @@
 # Network Video Recorder (NVR) System
 
-A modern, web-based Network Video Recorder system with an Apple-style user interface built using HTML, Tailwind CSS, and JavaScript.
+A modern web-based Network Video Recorder system for managing and monitoring security cameras.
 
 ## Features
 
-### Dashboard
-- Real-time system status monitoring (CPU, Memory, Storage)
-- Active camera count and status overview
-- Recent events feed with notifications
-- Live camera preview grid
-- Quick access to all system functions
-
-### Live Stream
-- Multi-camera grid view with responsive layout
-- Individual camera controls
-  - Full-screen view
-  - Audio controls
-  - Quality settings (resolution, frame rate)
-- Status indicators for each camera
-- Camera health monitoring
-- Add/Remove camera functionality
-
-### Video Playback
-- Advanced video player with timeline controls
-- Recording list with thumbnails and metadata
-- Date/time based video search
-- Export functionality for recorded videos
-- Multi-speed playback controls
-- Timeline scrubbing with preview
-
-### Settings
-- Comprehensive camera configuration
-  - Resolution settings
-  - Frame rate adjustment
-  - Motion detection
-  - Audio recording
-- Recording settings
-  - Storage location
-  - Retention period
-  - Storage limits
-  - Recording schedule
-- Notification preferences
-- System maintenance tools
+- **Dashboard**: Real-time system monitoring, camera status, and recent events
+- **Live Stream**: Multi-camera view with individual controls and status indicators
+- **Playback**: Video recording playback with timeline controls and recording management
+- **Settings**: Comprehensive camera and system configuration options
 
 ## Technology Stack
 
-- **Frontend Framework**: Tailwind CSS for modern, utility-first styling
-- **Icons**: Font Awesome for clear visual indicators
-- **Typography**: Google Fonts (Inter) for modern aesthetics
-- **Design**: Apple-inspired UI/UX with glass effects and smooth transitions
+- HTML5/CSS3 with Tailwind CSS for styling
+- Vanilla JavaScript with ES6 Modules
+- Font Awesome for icons
+- Google Fonts (Inter)
 
 ## Getting Started
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/ranjanjyoti152/NVR.git
-cd NVR
+git clone https://github.com/yourusername/nvr-system.git
 ```
 
-2. Start a local server:
+2. Navigate to the project directory:
 ```bash
-# Using Python
-python3 -m http.server 8000
-
-# Or using Node.js
-npx http-server -p 8000
+cd nvr-system
 ```
 
-3. Open your browser and navigate to:
+3. Start a local server (e.g., using Python):
+```bash
+python3 -m http.server 8000
+```
+
+4. Open your browser and visit:
 ```
 http://localhost:8000
 ```
 
+## Project Structure
+
+```
+NVR/
+├── css/
+│   └── styles.css
+├── js/
+│   ├── cameraService.js    # Simulated backend API
+│   ├── dashboard.js        # Dashboard functionality
+│   ├── live-stream.js      # Live camera stream handling
+│   ├── playback.js         # Video playback controls
+│   └── settings.js         # Settings management
+├── index.html              # Dashboard page
+├── live-stream.html        # Live camera feeds
+├── playback.html          # Recording playback
+└── settings.html          # System configuration
+```
+
+## Features
+
+### Dashboard
+- System status monitoring (CPU, Memory, Storage)
+- Active camera count and status
+- Recent events feed
+- Live camera previews
+
+### Live Stream
+- Multi-camera grid view
+- Camera status indicators
+- Individual camera controls
+- Camera reconnection handling
+
+### Playback
+- Video player with timeline
+- Recording list with thumbnails
+- Playback controls
+- Recording metadata
+
+### Settings
+- Camera configuration
+- Recording settings
+- Notification preferences
+- System maintenance
+
 ## Browser Support
 
-The NVR system is optimized for modern browsers:
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
+The application is designed to work with modern browsers that support:
+- ES6 Modules
+- CSS Grid/Flexbox
+- Fetch API
+- HTML5 Video
 
-## Features to be Added
+## Development
 
-- Backend API integration
-- Real-time notifications via WebSocket
-- User authentication and access control
-- Advanced motion detection algorithms
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+This is a demo implementation with simulated backend functionality. For production use:
+1. Replace the simulated API in cameraService.js with real backend calls
+2. Implement proper authentication and security measures
+3. Use a proper build system and package manager
+4. Replace CDN dependencies with local versions
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+MIT License - feel free to use this code for your own projects.

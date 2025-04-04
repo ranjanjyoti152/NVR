@@ -1,18 +1,9 @@
-// Configuration for 50 camera streams
-const cameraConfig = Array.from({ length: 50 }, (_, index) => ({
-    id: `camera-${index + 1}`,
-    name: `Camera ${index + 1}`,
-    // In a real implementation, this would be an RTSP URL
-    // For demo, we'll use a sample video or image
-    streamUrl: 'https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg',
-    status: Math.random() > 0.2 ? 'live' : 'offline', // Randomly set some cameras as offline
-    resolution: '1080p',
-    fps: '30fps'
-}));
+// Import camera service
+import { fetchCameras, retryCamera } from './cameraService.js';
 
 // Function to create a camera card element
 function createCameraCard(camera) {
-    const isOffline = camera.status === 'offline';
+    const isOffline = camera.status !== 'live';
     const cardHtml = `
         <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow" id="${camera.id}-card">
             <div class="relative aspect-video bg-gray-900">
@@ -37,15 +28,15 @@ function createCameraCard(camera) {
                 </div>
                 <div class="absolute top-4 right-4 space-x-2">
                     ${isOffline ? `
-                        <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="retryConnection('${camera.id}')">
+                        <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="window.retryConnection('${camera.id}')">
                             <i class="fas fa-redo"></i>
                         </button>
                     ` : `
-                        <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="toggleFullscreen('${camera.id}')">
+                        <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="window.toggleFullscreen('${camera.id}')">
                             <i class="fas fa-expand"></i>
                         </button>
                     `}
-                    <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="openSettings('${camera.id}')">
+                    <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="window.openSettings('${camera.id}')">
                         <i class="fas fa-cog"></i>
                     </button>
                 </div>
@@ -54,11 +45,11 @@ function createCameraCard(camera) {
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <button class="text-gray-500 hover:text-gray-700 ${isOffline ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                ${isOffline ? 'disabled' : ''} onclick="toggleMicrophone('${camera.id}')">
+                                ${isOffline ? 'disabled' : ''} onclick="window.toggleMicrophone('${camera.id}')">
                             <i class="fas fa-microphone-slash"></i>
                         </button>
                         <button class="text-gray-500 hover:text-gray-700 ${isOffline ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                ${isOffline ? 'disabled' : ''} onclick="toggleAudio('${camera.id}')">
+                                ${isOffline ? 'disabled' : ''} onclick="window.toggleAudio('${camera.id}')">
                             <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
@@ -73,12 +64,34 @@ function createCameraCard(camera) {
 }
 
 // Function to initialize the camera grid
-function initializeCameraGrid() {
+async function initializeCameraGrid() {
     const gridContainer = document.getElementById('camera-grid');
+    const loadingState = document.getElementById('loading-state');
+    const errorState = document.getElementById('error-state');
+
     if (!gridContainer) return;
 
-    const cameraCards = cameraConfig.map(camera => createCameraCard(camera)).join('');
-    gridContainer.innerHTML = cameraCards;
+    try {
+        // Show loading state
+        loadingState.classList.remove('hidden');
+        errorState.classList.add('hidden');
+        gridContainer.classList.add('hidden');
+
+        // Fetch cameras from service
+        const cameras = await fetchCameras();
+        
+        // Create and insert camera cards
+        const cameraCards = cameras.map(camera => createCameraCard(camera)).join('');
+        gridContainer.innerHTML = cameraCards;
+
+        // Hide loading state, show grid
+        loadingState.classList.add('hidden');
+        gridContainer.classList.remove('hidden');
+    } catch (error) {
+        console.error('Failed to initialize camera grid:', error);
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+    }
 }
 
 // Function to toggle fullscreen for a camera
@@ -96,12 +109,12 @@ function toggleFullscreen(cameraId) {
 }
 
 // Function to retry connection for offline cameras
-function retryConnection(cameraId) {
-    const camera = cameraConfig.find(c => c.id === cameraId);
-    if (!camera) return;
+async function retryConnection(cameraId) {
+    const card = document.getElementById(`${cameraId}-card`);
+    if (!card) return;
 
-    const statusElement = document.querySelector(`#${cameraId}-card .bg-danger`);
-    const statusText = document.querySelector(`#${cameraId}-card .flex.items-center span:last-child`);
+    const statusElement = card.querySelector('.bg-danger');
+    const statusText = card.querySelector('.flex.items-center span:last-child');
     
     if (statusElement && statusText) {
         statusElement.classList.remove('bg-danger');
@@ -109,28 +122,27 @@ function retryConnection(cameraId) {
         statusText.textContent = 'Connecting...';
     }
 
-    // Simulate reconnection attempt
-    setTimeout(() => {
-        const success = Math.random() > 0.5;
-        if (success) {
-            camera.status = 'live';
-            const cardElement = document.getElementById(`${cameraId}-card`);
-            if (cardElement) {
-                cardElement.outerHTML = createCameraCard(camera);
-            }
+    try {
+        const result = await retryCamera(cameraId);
+        if (result.success) {
+            // Refresh the entire camera grid to show updated status
+            await initializeCameraGrid();
         } else {
-            if (statusElement && statusText) {
-                statusElement.classList.remove('bg-warning');
-                statusElement.classList.add('bg-danger');
-                statusText.textContent = 'Offline';
-            }
+            throw new Error('Failed to reconnect camera');
         }
-    }, 2000);
+    } catch (error) {
+        console.error('Failed to retry camera connection:', error);
+        if (statusElement && statusText) {
+            statusElement.classList.remove('bg-warning');
+            statusElement.classList.add('bg-danger');
+            statusText.textContent = 'Offline';
+        }
+    }
 }
 
 // Function to toggle microphone
 function toggleMicrophone(cameraId) {
-    const button = document.querySelector(`#${cameraId}-card .fa-microphone-slash`);
+    const button = document.querySelector(`#${cameraId}-card .fa-microphone-slash, #${cameraId}-card .fa-microphone`);
     if (button) {
         button.classList.toggle('fa-microphone-slash');
         button.classList.toggle('fa-microphone');
@@ -139,7 +151,7 @@ function toggleMicrophone(cameraId) {
 
 // Function to toggle audio
 function toggleAudio(cameraId) {
-    const button = document.querySelector(`#${cameraId}-card .fa-volume-up`);
+    const button = document.querySelector(`#${cameraId}-card .fa-volume-up, #${cameraId}-card .fa-volume-mute`);
     if (button) {
         button.classList.toggle('fa-volume-up');
         button.classList.toggle('fa-volume-mute');
@@ -170,6 +182,13 @@ function initializeLayoutControls() {
         }
     });
 }
+
+// Make functions available globally for onclick handlers
+window.toggleFullscreen = toggleFullscreen;
+window.retryConnection = retryConnection;
+window.toggleMicrophone = toggleMicrophone;
+window.toggleAudio = toggleAudio;
+window.openSettings = openSettings;
 
 // Initialize when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {

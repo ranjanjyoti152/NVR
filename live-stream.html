@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <script>
+    <script type="module">
         tailwind.config = {
             theme: {
                 extend: {
@@ -89,28 +89,32 @@
                 </div>
             </div>
 
-            <!-- Camera Grid -->
-            <div id="camera-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Camera cards will be dynamically inserted here by JavaScript -->
-            </div>
-
-            <!-- Loading State -->
-            <div id="loading-state" class="text-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                <p class="mt-4 text-gray-600">Loading camera feeds...</p>
-            </div>
-
-            <!-- Error State -->
-            <div id="error-state" class="hidden text-center py-12">
-                <div class="text-danger text-5xl mb-4">
-                    <i class="fas fa-exclamation-circle"></i>
+            <!-- Camera Grid Container -->
+            <div class="space-y-6">
+                <!-- Camera Grid -->
+                <div id="camera-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
+                    <!-- Camera cards will be dynamically inserted here by JavaScript -->
                 </div>
-                <p class="text-xl font-medium text-gray-900 mb-2">Failed to Load Cameras</p>
-                <p class="text-gray-600">Please check your connection and try again</p>
-                <button onclick="window.location.reload()" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
-                    <i class="fas fa-redo mr-2"></i>
-                    Retry
-                </button>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Loading camera feeds...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="error-state" class="hidden text-center py-12">
+                    <div class="text-danger text-5xl mb-4">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <p class="text-xl font-medium text-gray-900 mb-2">Failed to Load Cameras</p>
+                    <p class="text-gray-600 mb-4">Please check your connection and try again</p>
+                    <button onclick="window.location.reload()" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
+                        <i class="fas fa-redo mr-2"></i>
+                        Retry
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -136,6 +140,6 @@
         </div>
     </footer>
     <!-- JavaScript -->
-    <script src="js/live-stream.js"></script>
+    <script type="module" src="js/live-stream.js"></script>
 </body>
 </html>

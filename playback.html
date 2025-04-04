@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script>
+    <script type="module">
         tailwind.config = {
             theme: {
                 extend: {
@@ -130,18 +130,19 @@
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                         <!-- Video Player -->
                         <div class="relative aspect-video bg-gray-900">
-                            <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                                 alt="Playback Video"
-                                 class="w-full h-full object-cover">
+                            <video id="video-player" class="w-full h-full object-cover">
+                                <source src="" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
                             <!-- Play Button Overlay -->
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <button class="w-16 h-16 bg-primary/90 rounded-full flex items-center justify-center text-white hover:bg-primary focus:outline-none">
+                                <button data-control="play" class="w-16 h-16 bg-primary/90 rounded-full flex items-center justify-center text-white hover:bg-primary focus:outline-none">
                                     <i class="fas fa-play text-xl"></i>
                                 </button>
                             </div>
                             <!-- Time Display -->
                             <div class="absolute bottom-4 left-4 bg-black/50 rounded px-2 py-1">
-                                <span class="text-white text-sm">00:00:00 / 02:30:00</span>
+                                <span class="text-white text-sm" data-time="display">00:00:00 / 00:00:00</span>
                             </div>
                         </div>
 
@@ -156,24 +157,24 @@
                             <!-- Control Buttons -->
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4">
-                                    <button class="text-gray-600 hover:text-gray-900">
+                                    <button class="text-gray-600 hover:text-gray-900" data-control="previous">
                                         <i class="fas fa-step-backward"></i>
                                     </button>
-                                    <button class="text-gray-600 hover:text-gray-900">
+                                    <button class="text-gray-600 hover:text-gray-900" data-control="play">
                                         <i class="fas fa-play"></i>
                                     </button>
-                                    <button class="text-gray-600 hover:text-gray-900">
+                                    <button class="text-gray-600 hover:text-gray-900" data-control="next">
                                         <i class="fas fa-step-forward"></i>
                                     </button>
-                                    <button class="text-gray-600 hover:text-gray-900">
+                                    <button class="text-gray-600 hover:text-gray-900" data-control="volume">
                                         <i class="fas fa-volume-up"></i>
                                     </button>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <button class="text-gray-600 hover:text-gray-900">
+                                    <button class="text-gray-600 hover:text-gray-900" data-control="captions">
                                         <i class="fas fa-closed-captioning"></i>
                                     </button>
-                                    <button class="text-gray-600 hover:text-gray-900">
+                                    <button class="text-gray-600 hover:text-gray-900" data-control="fullscreen">
                                         <i class="fas fa-expand"></i>
                                     </button>
                                 </div>
@@ -187,19 +188,19 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-sm text-gray-500">Camera</p>
-                                <p class="text-gray-900">Front Door Camera</p>
+                                <p class="text-gray-900" data-details="camera">--</p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Date</p>
-                                <p class="text-gray-900">October 10, 2023</p>
+                                <p class="text-gray-900" data-details="date">--</p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Duration</p>
-                                <p class="text-gray-900">2h 30m</p>
+                                <p class="text-gray-900" data-details="duration">--</p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">File Size</p>
-                                <p class="text-gray-900">1.2 GB</p>
+                                <p class="text-gray-900" data-details="file-size">--</p>
                             </div>
                         </div>
                     </div>
@@ -216,51 +217,15 @@
                         </div>
 
                         <!-- Recording Items -->
-                        <div class="space-y-4">
-                            <!-- Active Recording -->
-                            <div class="bg-primary/5 border-l-4 border-primary p-3 rounded-lg">
-                                <div class="flex items-start">
-                                    <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                                         alt="Recording Thumbnail" 
-                                         class="w-20 h-12 object-cover rounded">
-                                    <div class="ml-3 flex-1">
-                                        <h3 class="text-sm font-medium text-gray-900">Front Door</h3>
-                                        <p class="text-xs text-gray-500">Oct 10, 2023 - 14:30</p>
-                                        <p class="text-xs text-gray-500">2h 30m</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Other Recordings -->
-                            <div class="hover:bg-gray-50 p-3 rounded-lg transition-colors">
-                                <div class="flex items-start">
-                                    <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                                         alt="Recording Thumbnail" 
-                                         class="w-20 h-12 object-cover rounded">
-                                    <div class="ml-3 flex-1">
-                                        <h3 class="text-sm font-medium text-gray-900">Back Yard</h3>
-                                        <p class="text-xs text-gray-500">Oct 10, 2023 - 12:00</p>
-                                        <p class="text-xs text-gray-500">1h 45m</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="hover:bg-gray-50 p-3 rounded-lg transition-colors">
-                                <div class="flex items-start">
-                                    <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                                         alt="Recording Thumbnail" 
-                                         class="w-20 h-12 object-cover rounded">
-                                    <div class="ml-3 flex-1">
-                                        <h3 class="text-sm font-medium text-gray-900">Garage</h3>
-                                        <p class="text-xs text-gray-500">Oct 10, 2023 - 09:15</p>
-                                        <p class="text-xs text-gray-500">2h 15m</p>
-                                    </div>
-                                </div>
+                        <div id="recordings-list" class="space-y-4">
+                            <!-- Loading State -->
+                            <div class="flex items-center justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
                         </div>
 
                         <!-- Load More Button -->
-                        <button class="mt-4 w-full py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                        <button data-recordings="load-more" class="mt-4 w-full py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                             Load More
                         </button>
                     </div>
@@ -289,5 +254,7 @@
             </div>
         </div>
     </footer>
+    <!-- JavaScript -->
+    <script type="module" src="js/playback.js"></script>
 </body>
 </html>
