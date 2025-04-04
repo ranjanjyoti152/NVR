@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
     <script>
         tailwind.config = {
             theme: {
@@ -30,31 +32,6 @@
             }
         }
     </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F2F2F7;
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        .camera-grid {
-            display: grid;
-            gap: 1rem;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
-        .camera-feed {
-            aspect-ratio: 16/9;
-            background: #000;
-            position: relative;
-        }
-        .camera-feed.active {
-            grid-column: span 2;
-            grid-row: span 2;
-        }
-    </style>
 </head>
 <body class="min-h-screen">
     <!-- Navigation -->
@@ -81,7 +58,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button type="button" class="bg-primary p-2 rounded-full text-white hover:opacity-90 focus:outline-none">
+                    <button id="layout-toggle" type="button" class="bg-primary p-2 rounded-full text-white hover:opacity-90 focus:outline-none">
                         <span class="sr-only">Grid Layout</span>
                         <i class="fas fa-th-large"></i>
                     </button>
@@ -113,129 +90,27 @@
             </div>
 
             <!-- Camera Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Camera 1 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <div class="relative aspect-video bg-gray-900">
-                        <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                             alt="Front Door Camera"
-                             class="w-full h-full object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="flex items-center bg-black/50 rounded-full px-3 py-1 text-white text-sm">
-                                <span class="w-2 h-2 bg-success rounded-full mr-2"></span>
-                                Live
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4">
-                            <h3 class="text-white text-lg font-medium">Front Door</h3>
-                        </div>
-                        <div class="absolute top-4 right-4 space-x-2">
-                            <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                            <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 border-t border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-microphone-slash"></i>
-                                </button>
-                                <button class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-volume-up"></i>
-                                </button>
-                            </div>
-                            <div class="text-sm text-gray-500">
-                                1080p • 30fps
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="camera-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Camera cards will be dynamically inserted here by JavaScript -->
+            </div>
 
-                <!-- Camera 2 -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <div class="relative aspect-video bg-gray-900">
-                        <img src="https://images.pexels.com/photos/1557547/pexels-photo-1557547.jpeg" 
-                             alt="Back Yard Camera"
-                             class="w-full h-full object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="flex items-center bg-black/50 rounded-full px-3 py-1 text-white text-sm">
-                                <span class="w-2 h-2 bg-success rounded-full mr-2"></span>
-                                Live
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4">
-                            <h3 class="text-white text-lg font-medium">Back Yard</h3>
-                        </div>
-                        <div class="absolute top-4 right-4 space-x-2">
-                            <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                            <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 border-t border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-microphone-slash"></i>
-                                </button>
-                                <button class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-volume-up"></i>
-                                </button>
-                            </div>
-                            <div class="text-sm text-gray-500">
-                                1080p • 30fps
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Loading State -->
+            <div id="loading-state" class="text-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                <p class="mt-4 text-gray-600">Loading camera feeds...</p>
+            </div>
 
-                <!-- Camera 3 (Offline) -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <div class="relative aspect-video bg-gray-900">
-                        <div class="absolute inset-0 flex items-center justify-center bg-gray-200">
-                            <i class="fas fa-video-slash text-4xl text-gray-400"></i>
-                        </div>
-                        <div class="absolute top-4 left-4">
-                            <span class="flex items-center bg-black/50 rounded-full px-3 py-1 text-white text-sm">
-                                <span class="w-2 h-2 bg-danger rounded-full mr-2"></span>
-                                Offline
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4">
-                            <h3 class="text-white text-lg font-medium">Garage</h3>
-                        </div>
-                        <div class="absolute top-4 right-4 space-x-2">
-                            <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70">
-                                <i class="fas fa-redo"></i>
-                            </button>
-                            <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 border-t border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-gray-300" disabled>
-                                    <i class="fas fa-microphone-slash"></i>
-                                </button>
-                                <button class="text-gray-300" disabled>
-                                    <i class="fas fa-volume-up"></i>
-                                </button>
-                            </div>
-                            <div class="text-sm text-danger">
-                                Connection Failed
-                            </div>
-                        </div>
-                    </div>
+            <!-- Error State -->
+            <div id="error-state" class="hidden text-center py-12">
+                <div class="text-danger text-5xl mb-4">
+                    <i class="fas fa-exclamation-circle"></i>
                 </div>
+                <p class="text-xl font-medium text-gray-900 mb-2">Failed to Load Cameras</p>
+                <p class="text-gray-600">Please check your connection and try again</p>
+                <button onclick="window.location.reload()" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
+                    <i class="fas fa-redo mr-2"></i>
+                    Retry
+                </button>
             </div>
         </div>
     </main>
@@ -260,5 +135,7 @@
             </div>
         </div>
     </footer>
+    <!-- JavaScript -->
+    <script src="js/live-stream.js"></script>
 </body>
 </html>
