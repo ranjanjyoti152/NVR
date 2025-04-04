@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVR Camera Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .stream-container {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stream-view {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            background: #333;
+            margin: 0 auto;
+            display: block;
+        }
+        .controls {
+            margin-top: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>NVR Camera Viewer</h1>
+        <div class="stream-container">
+            <canvas id="stream" class="stream-view"></canvas>
+            <div class="controls">
+                <button id="startBtn">Start Stream</button>
+                <button id="stopBtn" disabled>Stop Stream</button>
+                <button id="recordBtn">Start Recording</button>
+            </div>
+        </div>
+        <div class="status" id="status">Status: Not connected</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('stream');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const statusDiv = document.getElementById('status');
+        let currentCameraId = null;
+        let isRecording = false;
+
+        // Connect to WebSocket server
+        const socket = io();
+
+        socket.on('connect', () => {
+            statusDiv.textContent = 'Status: Connected to server';
+        });
+
+        socket.on('disconnect', () => {
+            statusDiv.textContent = 'Status: Disconnected from server';
+            stopBtn.disabled = true;
+            startBtn.disabled = false;
+        });
+
+        // Handle stream data
+        socket.on('stream', (data) => {
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+            img.src = 'data:image/jpeg;base64,' + data;
+        });
+
+        // Handle camera list
+        async function loadCameras() {
+            try {
+                const response = await fetch('/api/cameras');
+                const data = await response.json();
+                if (data.success && data.cameras.length > 0) {
+                    currentCameraId = data.cameras[0]._id;
+                    startBtn.disabled = false;
+                    statusDiv.textContent = 'Status: Camera found - Ready to stream';
+                } else {
+                    statusDiv.textContent = 'Status: No cameras available';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Status: Error loading cameras - ' + error.message;
+            }
+        }
+
+        // Start stream
+        startBtn.addEventListener('click', async () => {
+            if (!currentCameraId) return;
+            
+            try {
+                const response = await fetch(`/api/cameras/${currentCameraId}/stream/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    socket.emit('subscribe', currentCameraId);
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    statusDiv.textContent = 'Status: Streaming';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Status: Error starting stream - ' + error.message;
+            }
+        });
+
+        // Stop stream
+        stopBtn.addEventListener('click', async () => {
+            if (!currentCameraId) return;
+            
+            try {
+                const response = await fetch(`/api/cameras/${currentCameraId}/stream/stop`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    socket.emit('unsubscribe', currentCameraId);
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    statusDiv.textContent = 'Status: Stream stopped';
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Status: Error stopping stream - ' + error.message;
+            }
+        });
+
+        // Toggle recording
+        recordBtn.addEventListener('click', async () => {
+            if (!currentCameraId) return;
+            
+            try {
+                if (!isRecording) {
+                    const response = await fetch('/api/recordings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ cameraId: currentCameraId })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        isRecording = true;
+                        recordBtn.textContent = 'Stop Recording';
+                        recordBtn.style.backgroundColor = '#dc3545';
+                        statusDiv.textContent = 'Status: Recording...';
+                    }
+                } else {
+                    const response = await fetch(`/api/recordings/${currentRecordingId}/stop`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        isRecording = false;
+                        recordBtn.textContent = 'Start Recording';
+                        recordBtn.style.backgroundColor = '#007bff';
+                        statusDiv.textContent = 'Status: Recording stopped';
+                    }
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Status: Error with recording - ' + error.message;
+            }
+        });
+
+        // Load cameras on page load
+        loadCameras();
+    </script>
+</body>
+</html>
