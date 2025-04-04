@@ -1,194 +1,221 @@
-// Import the camera service functions
-import { fetchSystemStatus, fetchCameras, fetchRecentEvents } from './cameraService.js';
+import { fetchCameras, fetchSystemStatus, fetchRecentEvents } from './cameraService.js';
 
 // DOM Elements
-const systemStatusCard = {
-    cpuUsage: document.querySelector('[data-status="cpu-usage"]'),
-    memoryUsage: document.querySelector('[data-status="memory-usage"]'),
-    storage: document.querySelector('[data-status="storage"]'),
-    statusBadge: document.querySelector('[data-status="system-badge"]')
+const systemStatusEl = document.getElementById('system-status');
+const camerasGridEl = document.getElementById('cameras-grid');
+const eventsListEl = document.getElementById('events-list');
+const loadingOverlay = document.getElementById('loading-overlay');
+
+// Refresh intervals (in milliseconds)
+const SYSTEM_STATUS_REFRESH = 5000;
+const CAMERAS_REFRESH = 10000;
+const EVENTS_REFRESH = 30000;
+
+// Show/hide loading overlay
+const toggleLoading = (show) => {
+    loadingOverlay.style.display = show ? 'flex' : 'none';
 };
 
-const camerasCard = {
-    activeCount: document.querySelector('[data-cameras="active-count"]'),
-    totalCount: document.querySelector('[data-cameras="total-count"]'),
-    progressBar: document.querySelector('[data-cameras="progress-bar"]')
-};
-
-const eventsContainer = document.querySelector('[data-events="container"]');
-const cameraFeedsGrid = document.querySelector('[data-camera-feeds="grid"]');
-
-// Loading and error states
-const showLoading = (element) => {
-    if (!element) return;
-    element.innerHTML = `
-        <div class="flex items-center justify-center p-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-    `;
-};
-
-const showError = (element, message) => {
-    if (!element) return;
-    element.innerHTML = `
-        <div class="flex items-center justify-center p-4 text-danger">
+// Display error message
+const showError = (message) => {
+    const errorEl = document.createElement('div');
+    errorEl.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded';
+    errorEl.innerHTML = `
+        <div class="flex items-center">
             <i class="fas fa-exclamation-circle mr-2"></i>
-            <span>${message}</span>
+            <p>${message}</p>
         </div>
     `;
+    document.querySelector('main').prepend(errorEl);
+    setTimeout(() => errorEl.remove(), 5000);
 };
 
-// Update system status card
+// Update system status metrics
 const updateSystemStatus = async () => {
     try {
         const status = await fetchSystemStatus();
         
-        if (systemStatusCard.cpuUsage) {
-            systemStatusCard.cpuUsage.textContent = `${status.cpu.usage}%`;
-        }
-        
-        if (systemStatusCard.memoryUsage) {
-            systemStatusCard.memoryUsage.textContent = 
-                `${status.memory.used} ${status.memory.unit}`;
-        }
-        
-        if (systemStatusCard.storage) {
-            const freeStorage = status.storage.total - status.storage.used;
-            systemStatusCard.storage.textContent = 
-                `${freeStorage} ${status.storage.unit} Free`;
-        }
+        systemStatusEl.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- CPU Status -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-gray-700 font-semibold">
+                            <i class="fas fa-microchip mr-2"></i>CPU
+                        </h3>
+                        <span class="text-${status.cpu.usage > 80 ? 'red' : 'green'}-500">
+                            ${status.cpu.usage}%
+                        </span>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full">
+                        <div class="bg-blue-500 rounded-full h-2" 
+                             style="width: ${status.cpu.usage}%">
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Temperature: ${status.cpu.temperature}°C
+                    </p>
+                </div>
 
-        // Update status badge
-        if (systemStatusCard.statusBadge) {
-            const isHealthy = status.cpu.usage < 80 && 
-                            (status.memory.used / status.memory.total) < 0.8 &&
-                            (status.storage.used / status.storage.total) < 0.8;
-            
-            systemStatusCard.statusBadge.textContent = isHealthy ? 'Active' : 'Warning';
-            systemStatusCard.statusBadge.className = 
-                `px-3 py-1 bg-${isHealthy ? 'success' : 'warning'} bg-opacity-10 ` +
-                `text-${isHealthy ? 'success' : 'warning'} rounded-full text-sm`;
-        }
+                <!-- Memory Status -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-gray-700 font-semibold">
+                            <i class="fas fa-memory mr-2"></i>Memory
+                        </h3>
+                        <span class="text-${(status.memory.used/status.memory.total > 0.8) ? 'red' : 'green'}-500">
+                            ${status.memory.used}/${status.memory.total} ${status.memory.unit}
+                        </span>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full">
+                        <div class="bg-blue-500 rounded-full h-2" 
+                             style="width: ${(status.memory.used/status.memory.total)*100}%">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Status -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-gray-700 font-semibold">
+                            <i class="fas fa-hdd mr-2"></i>Storage
+                        </h3>
+                        <span class="text-${(status.storage.used/status.storage.total > 0.8) ? 'red' : 'green'}-500">
+                            ${status.storage.used}/${status.storage.total} ${status.storage.unit}
+                        </span>
+                    </div>
+                    <div class="mt-2 bg-gray-200 rounded-full">
+                        <div class="bg-blue-500 rounded-full h-2" 
+                             style="width: ${(status.storage.used/status.storage.total)*100}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     } catch (error) {
-        console.error('Failed to update system status:', error);
-        showError(document.querySelector('[data-status="card"]'), 
-                 'Failed to load system status');
+        showError('Failed to update system status');
+        console.error('System status error:', error);
     }
 };
 
-// Update active cameras card
-const updateCamerasCard = async () => {
+// Update cameras grid
+const updateCameras = async () => {
     try {
         const cameras = await fetchCameras();
-        const activeCameras = cameras.filter(cam => cam.status === 'live');
         
-        if (camerasCard.activeCount) {
-            camerasCard.activeCount.textContent = activeCameras.length;
-        }
-        
-        if (camerasCard.totalCount) {
-            camerasCard.totalCount.textContent = cameras.length;
-        }
-        
-        if (camerasCard.progressBar) {
-            const percentage = (activeCameras.length / cameras.length) * 100;
-            camerasCard.progressBar.style.width = `${percentage}%`;
-        }
+        camerasGridEl.innerHTML = cameras.map(camera => `
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="relative">
+                    <img src="${camera.streamUrl}" 
+                         alt="${camera.name}" 
+                         class="w-full h-48 object-cover">
+                    <div class="absolute top-2 right-2">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                   ${camera.status === 'live' ? 'bg-green-500' : 'bg-red-500'} 
+                                   text-white">
+                            ${camera.status.toUpperCase()}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-700">${camera.name}</h3>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <p>Resolution: ${camera.resolution}</p>
+                        <p>FPS: ${camera.fps}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
     } catch (error) {
-        console.error('Failed to update cameras card:', error);
-        showError(document.querySelector('[data-cameras="card"]'), 
-                 'Failed to load camera status');
+        showError('Failed to update cameras');
+        console.error('Cameras update error:', error);
     }
 };
 
 // Update recent events
-const updateRecentEvents = async () => {
-    if (!eventsContainer) return;
-    
+const updateEvents = async () => {
     try {
         const events = await fetchRecentEvents();
         
-        const eventIcons = {
-            motion: 'fas fa-exclamation-triangle text-warning',
-            offline: 'fas fa-times-circle text-danger',
-            storage: 'fas fa-hdd text-warning'
-        };
-
-        const eventHTML = events.map(event => `
-            <div class="flex items-start space-x-3">
-                <span class="${eventIcons[event.type] || 'fas fa-info-circle text-info'}"></span>
-                <div>
-                    <p class="text-sm text-gray-900">
-                        ${event.type === 'motion' ? `Motion Detected - ${event.camera}` :
-                          event.type === 'offline' ? `${event.camera} Offline` :
-                          event.message}
-                    </p>
-                    <p class="text-xs text-gray-500">
-                        ${new Date(event.timestamp).toLocaleString()}
-                    </p>
+        eventsListEl.innerHTML = events.map(event => `
+            <div class="bg-white rounded-lg shadow p-4 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-${getEventIcon(event.type)} text-${getSeverityColor(event.severity)}-500 mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-700">
+                                ${getEventTitle(event)}
+                            </h4>
+                            <p class="text-sm text-gray-500">
+                                ${new Date(event.timestamp).toLocaleString()}
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold
+                               bg-${getSeverityColor(event.severity)}-100 
+                               text-${getSeverityColor(event.severity)}-800">
+                        ${event.severity.toUpperCase()}
+                    </span>
                 </div>
             </div>
         `).join('');
-
-        eventsContainer.innerHTML = eventHTML;
     } catch (error) {
-        console.error('Failed to update recent events:', error);
-        showError(eventsContainer, 'Failed to load recent events');
+        showError('Failed to update events');
+        console.error('Events update error:', error);
     }
 };
 
-// Update camera feeds
-const updateCameraFeeds = async () => {
-    if (!cameraFeedsGrid) return;
-    
-    try {
-        const cameras = await fetchCameras();
-        const activeCameras = cameras.slice(0, 3); // Show only first 3 cameras
+// Helper functions
+const getEventIcon = (type) => {
+    const icons = {
+        motion: 'walking',
+        offline: 'exclamation-triangle',
+        storage: 'hdd',
+        default: 'info-circle'
+    };
+    return icons[type] || icons.default;
+};
 
-        const feedsHTML = activeCameras.map(camera => `
-            <div class="relative rounded-lg overflow-hidden bg-gray-100 aspect-video">
-                ${camera.status === 'live' ? `
-                    <img src="${camera.streamUrl}" 
-                         alt="${camera.name}" 
-                         class="w-full h-full object-cover">
-                ` : `
-                    <div class="absolute inset-0 flex items-center justify-center bg-gray-200">
-                        <i class="fas fa-video-slash text-4xl text-gray-400"></i>
-                    </div>
-                `}
-                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                    <div class="flex justify-between items-center">
-                        <span class="text-white text-sm font-medium">${camera.name}</span>
-                        <span class="flex items-center">
-                            <span class="w-2 h-2 bg-${camera.status === 'live' ? 'success' : 'danger'} rounded-full mr-1"></span>
-                            <span class="text-white text-xs">${camera.status === 'live' ? 'Live' : 'Offline'}</span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+const getSeverityColor = (severity) => {
+    const colors = {
+        danger: 'red',
+        warning: 'yellow',
+        info: 'blue',
+        default: 'gray'
+    };
+    return colors[severity] || colors.default;
+};
 
-        cameraFeedsGrid.innerHTML = feedsHTML;
-    } catch (error) {
-        console.error('Failed to update camera feeds:', error);
-        showError(cameraFeedsGrid, 'Failed to load camera feeds');
+const getEventTitle = (event) => {
+    if (event.type === 'motion') {
+        return `Motion detected - ${event.camera}`;
+    } else if (event.type === 'offline') {
+        return `Camera offline - ${event.camera}`;
     }
+    return event.message || 'System Event';
 };
 
 // Initialize dashboard
-const initializeDashboard = () => {
-    // Initial load
-    updateSystemStatus();
-    updateCamerasCard();
-    updateRecentEvents();
-    updateCameraFeeds();
-
-    // Set up periodic updates
-    setInterval(updateSystemStatus, 5000);  // Every 5 seconds
-    setInterval(updateCamerasCard, 10000);  // Every 10 seconds
-    setInterval(updateRecentEvents, 15000); // Every 15 seconds
-    setInterval(updateCameraFeeds, 20000);  // Every 20 seconds
+const initDashboard = async () => {
+    toggleLoading(true);
+    try {
+        await Promise.all([
+            updateSystemStatus(),
+            updateCameras(),
+            updateEvents()
+        ]);
+        
+        // Set up refresh intervals
+        setInterval(updateSystemStatus, SYSTEM_STATUS_REFRESH);
+        setInterval(updateCameras, CAMERAS_REFRESH);
+        setInterval(updateEvents, EVENTS_REFRESH);
+    } catch (error) {
+        showError('Failed to initialize dashboard');
+        console.error('Dashboard initialization error:', error);
+    } finally {
+        toggleLoading(false);
+    }
 };
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeDashboard);
+// Start the dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', initDashboard);

@@ -1,242 +1,202 @@
-// Import camera service functions
 import { fetchRecordings } from './cameraService.js';
 
 // DOM Elements
-const videoPlayer = {
-    container: document.getElementById('video-player'),
-    timeline: document.querySelector('.timeline'),
-    timelineProgress: document.querySelector('.timeline-progress'),
-    timelineHandle: document.querySelector('.timeline-handle'),
-    timeDisplay: document.querySelector('[data-time="display"]'),
-    playButton: document.querySelector('[data-control="play"]'),
-    volumeButton: document.querySelector('[data-control="volume"]'),
-    fullscreenButton: document.querySelector('[data-control="fullscreen"]')
-};
-
-const recordingsList = {
-    container: document.getElementById('recordings-list'),
-    loadMoreButton: document.querySelector('[data-recordings="load-more"]')
-};
+const recordingsListEl = document.getElementById('recordings-list');
+const videoPlayerEl = document.getElementById('video-player');
+const timelineEl = document.getElementById('timeline');
+const loadingOverlay = document.getElementById('loading-overlay');
+const currentTimeEl = document.getElementById('current-time');
+const totalTimeEl = document.getElementById('total-time');
+const playPauseBtn = document.getElementById('play-pause-btn');
+const volumeBtn = document.getElementById('volume-btn');
+const volumeSlider = document.getElementById('volume-slider');
+const progressBar = document.getElementById('progress-bar');
+const downloadBtn = document.getElementById('download-btn');
 
 // State
 let currentRecording = null;
-let isPlaying = false;
-let currentTime = 0;
-let duration = 0;
+let recordings = [];
 
-// Format time in HH:MM:SS
+// Show/hide loading overlay
+const toggleLoading = (show) => {
+    loadingOverlay.style.display = show ? 'flex' : 'none';
+};
+
+// Show error message
+const showError = (message) => {
+    const errorEl = document.createElement('div');
+    errorEl.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50';
+    errorEl.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <p>${message}</p>
+        </div>
+    `;
+    document.body.appendChild(errorEl);
+    setTimeout(() => errorEl.remove(), 5000);
+};
+
+// Format time (seconds to HH:MM:SS)
 const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = Math.floor(seconds % 60);
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 };
 
-// Update timeline position
-const updateTimeline = (time) => {
-    if (!duration) return;
+// Format file size
+const formatFileSize = (bytes) => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (bytes === 0) return '0 Byte';
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
+
+// Update video controls
+const updateVideoControls = () => {
+    if (!videoPlayerEl.paused) {
+        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    } else {
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    }
+
+    if (videoPlayerEl.muted) {
+        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+    } else {
+        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+    }
+
+    volumeSlider.value = videoPlayerEl.volume * 100;
     
-    const progress = (time / duration) * 100;
-    if (videoPlayer.timelineProgress) {
-        videoPlayer.timelineProgress.style.width = `${progress}%`;
-    }
-    if (videoPlayer.timelineHandle) {
-        videoPlayer.timelineHandle.style.left = `${progress}%`;
-    }
-    if (videoPlayer.timeDisplay) {
-        videoPlayer.timeDisplay.textContent = `${formatTime(time)} / ${formatTime(duration)}`;
-    }
+    // Update progress bar
+    const progress = (videoPlayerEl.currentTime / videoPlayerEl.duration) * 100;
+    progressBar.style.width = `${progress}%`;
+    
+    // Update time display
+    currentTimeEl.textContent = formatTime(videoPlayerEl.currentTime);
+    totalTimeEl.textContent = formatTime(videoPlayerEl.duration);
 };
 
-// Toggle play/pause
+// Play/Pause toggle
 const togglePlayPause = () => {
-    if (!videoPlayer.playButton) return;
-    
-    isPlaying = !isPlaying;
-    const icon = videoPlayer.playButton.querySelector('i');
-    if (icon) {
-        icon.classList.toggle('fa-play');
-        icon.classList.toggle('fa-pause');
-    }
-
-    // In a real implementation, this would control video playback
-    if (isPlaying) {
-        // Simulate video progress
-        window.playbackInterval = setInterval(() => {
-            currentTime = Math.min(currentTime + 1, duration);
-            updateTimeline(currentTime);
-            if (currentTime >= duration) {
-                togglePlayPause();
-            }
-        }, 1000);
+    if (videoPlayerEl.paused) {
+        videoPlayerEl.play();
     } else {
-        clearInterval(window.playbackInterval);
+        videoPlayerEl.pause();
     }
 };
 
-// Toggle volume
+// Volume toggle
 const toggleVolume = () => {
-    if (!videoPlayer.volumeButton) return;
-    
-    const icon = videoPlayer.volumeButton.querySelector('i');
-    if (icon) {
-        icon.classList.toggle('fa-volume-up');
-        icon.classList.toggle('fa-volume-mute');
-    }
+    videoPlayerEl.muted = !videoPlayerEl.muted;
+    updateVideoControls();
 };
 
-// Toggle fullscreen
-const toggleFullscreen = () => {
-    if (!videoPlayer.container) return;
-
-    if (!document.fullscreenElement) {
-        videoPlayer.container.requestFullscreen().catch(err => {
-            console.error(`Error attempting to enable fullscreen: ${err.message}`);
-        });
-    } else {
-        document.exitFullscreen();
-    }
+// Set volume
+const setVolume = (value) => {
+    videoPlayerEl.volume = value / 100;
+    videoPlayerEl.muted = value === 0;
+    updateVideoControls();
 };
 
-// Create recording item
-const createRecordingItem = (recording, isActive = false) => {
-    const startTime = new Date(recording.startTime);
-    const durationInHours = recording.duration / 60;
+// Seek video
+const seekVideo = (event) => {
+    const rect = timelineEl.getBoundingClientRect();
+    const pos = (event.clientX - rect.left) / rect.width;
+    videoPlayerEl.currentTime = pos * videoPlayerEl.duration;
+};
+
+// Load recording
+const loadRecording = (recording) => {
+    currentRecording = recording;
+    videoPlayerEl.src = recording.url;
+    videoPlayerEl.poster = recording.thumbnail;
+    downloadBtn.href = recording.url;
+    downloadBtn.download = `${recording.cameraName}-${new Date(recording.startTime).toISOString()}.mp4`;
     
-    return `
-        <div class="${isActive ? 'bg-primary/5 border-l-4 border-primary' : 'hover:bg-gray-50'} p-3 rounded-lg transition-colors"
-             data-recording-id="${recording.id}">
-            <div class="flex items-start">
-                <img src="${recording.thumbnail}" 
-                     alt="${recording.cameraName} Recording" 
-                     class="w-20 h-12 object-cover rounded">
-                <div class="ml-3 flex-1">
-                    <h3 class="text-sm font-medium text-gray-900">${recording.cameraName}</h3>
-                    <p class="text-xs text-gray-500">${startTime.toLocaleString()}</p>
-                    <p class="text-xs text-gray-500">${durationInHours.toFixed(1)}h</p>
+    // Update selected recording in the list
+    document.querySelectorAll('.recording-item').forEach(item => {
+        item.classList.remove('border-blue-500');
+        if (item.dataset.id === recording.id) {
+            item.classList.add('border-blue-500');
+        }
+    });
+};
+
+// Update recordings list
+const updateRecordings = async () => {
+    try {
+        recordings = await fetchRecordings();
+        
+        recordingsListEl.innerHTML = recordings.map(recording => `
+            <div class="recording-item border rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                currentRecording?.id === recording.id ? 'border-blue-500' : 'border-gray-200'
+            }" data-id="${recording.id}" onclick="loadRecording(${JSON.stringify(recording).replace(/"/g, '&quot;')})">
+                <div class="flex items-center space-x-4">
+                    <div class="relative w-32 h-20 flex-shrink-0">
+                        <img src="${recording.thumbnail}" 
+                             alt="${recording.cameraName}"
+                             class="absolute inset-0 w-full h-full object-cover rounded">
+                    </div>
+                    <div class="flex-grow">
+                        <h3 class="font-semibold text-gray-900">${recording.cameraName}</h3>
+                        <p class="text-sm text-gray-500">
+                            ${new Date(recording.startTime).toLocaleString()}
+                        </p>
+                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                            <span class="mr-3">
+                                <i class="fas fa-clock mr-1"></i>
+                                ${recording.duration} min
+                            </span>
+                            <span class="mr-3">
+                                <i class="fas fa-video mr-1"></i>
+                                ${recording.resolution}
+                            </span>
+                            <span>
+                                <i class="fas fa-hdd mr-1"></i>
+                                ${formatFileSize(recording.fileSize * 1024 * 1024)}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-};
+        `).join('');
 
-// Load recordings
-const loadRecordings = async () => {
-    try {
-        const recordings = await fetchRecordings();
-        
-        if (!recordingsList.container) return;
-
-        // Display recordings
-        const recordingsHTML = recordings.map((recording, index) => 
-            createRecordingItem(recording, index === 0)
-        ).join('');
-        
-        recordingsList.container.innerHTML = recordingsHTML;
-
-        // Set up first recording as current
-        if (recordings.length > 0) {
-            currentRecording = recordings[0];
-            duration = currentRecording.duration * 60; // Convert minutes to seconds
-            updateTimeline(0);
-            
-            // Update recording details
-            const detailsElements = {
-                camera: document.querySelector('[data-details="camera"]'),
-                date: document.querySelector('[data-details="date"]'),
-                duration: document.querySelector('[data-details="duration"]'),
-                fileSize: document.querySelector('[data-details="file-size"]')
-            };
-
-            if (detailsElements.camera) {
-                detailsElements.camera.textContent = currentRecording.cameraName;
-            }
-            if (detailsElements.date) {
-                detailsElements.date.textContent = new Date(currentRecording.startTime).toLocaleDateString();
-            }
-            if (detailsElements.duration) {
-                detailsElements.duration.textContent = `${(currentRecording.duration / 60).toFixed(1)}h`;
-            }
-            if (detailsElements.fileSize) {
-                detailsElements.fileSize.textContent = `${(currentRecording.fileSize / 1000).toFixed(1)} GB`;
-            }
+        // Load the first recording if none is selected
+        if (!currentRecording && recordings.length > 0) {
+            loadRecording(recordings[0]);
         }
-
-        // Add click handlers to recordings
-        const recordingItems = recordingsList.container.querySelectorAll('[data-recording-id]');
-        recordingItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // In a real implementation, this would load the selected recording
-                recordingItems.forEach(ri => ri.classList.remove('bg-primary/5', 'border-l-4', 'border-primary'));
-                item.classList.add('bg-primary/5', 'border-l-4', 'border-primary');
-            });
-        });
-
     } catch (error) {
-        console.error('Failed to load recordings:', error);
-        if (recordingsList.container) {
-            recordingsList.container.innerHTML = `
-                <div class="text-center py-8">
-                    <div class="text-danger text-4xl mb-3">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </div>
-                    <p class="text-gray-900 font-medium">Failed to load recordings</p>
-                    <button onclick="window.location.reload()" 
-                            class="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
-                        Retry
-                    </button>
-                </div>
-            `;
-        }
+        showError('Failed to load recordings');
+        console.error('Recordings update error:', error);
     }
 };
 
-// Initialize playback controls
-const initializeControls = () => {
-    // Play/Pause button
-    if (videoPlayer.playButton) {
-        videoPlayer.playButton.addEventListener('click', togglePlayPause);
-    }
-
-    // Volume button
-    if (videoPlayer.volumeButton) {
-        videoPlayer.volumeButton.addEventListener('click', toggleVolume);
-    }
-
-    // Fullscreen button
-    if (videoPlayer.fullscreenButton) {
-        videoPlayer.fullscreenButton.addEventListener('click', toggleFullscreen);
-    }
-
-    // Timeline scrubbing
-    if (videoPlayer.timeline) {
-        videoPlayer.timeline.addEventListener('click', (e) => {
-            const rect = videoPlayer.timeline.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            currentTime = pos * duration;
-            updateTimeline(currentTime);
-        });
-    }
-
-    // Load more button
-    if (recordingsList.loadMoreButton) {
-        recordingsList.loadMoreButton.addEventListener('click', () => {
-            // In a real implementation, this would load more recordings
-            recordingsList.loadMoreButton.classList.add('opacity-50', 'cursor-not-allowed');
-            recordingsList.loadMoreButton.textContent = 'No more recordings';
-        });
+// Initialize playback page
+const initPlayback = async () => {
+    toggleLoading(true);
+    try {
+        await updateRecordings();
+        
+        // Set up video player event listeners
+        videoPlayerEl.addEventListener('play', updateVideoControls);
+        videoPlayerEl.addEventListener('pause', updateVideoControls);
+        videoPlayerEl.addEventListener('timeupdate', updateVideoControls);
+        videoPlayerEl.addEventListener('volumechange', updateVideoControls);
+        
+        // Make functions available globally for onclick handlers
+        window.loadRecording = loadRecording;
+        window.togglePlayPause = togglePlayPause;
+        window.toggleVolume = toggleVolume;
+        window.setVolume = setVolume;
+        window.seekVideo = seekVideo;
+    } catch (error) {
+        showError('Failed to initialize playback');
+        console.error('Playback initialization error:', error);
+    } finally {
+        toggleLoading(false);
     }
 };
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    loadRecordings();
-    initializeControls();
-});
-
-// Cleanup on page unload
-window.addEventListener('unload', () => {
-    if (window.playbackInterval) {
-        clearInterval(window.playbackInterval);
-    }
-});
+// Start the playback when DOM is loaded
+document.addEventListener('DOMContentLoaded', initPlayback);

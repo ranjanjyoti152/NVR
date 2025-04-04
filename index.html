@@ -3,73 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Video Recorder</title>
-    <!-- Tailwind CSS via CDN -->
+    <title>NVR System - Dashboard</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script type="module">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'primary': '#007AFF',
-                        'secondary': '#5856D6',
-                        'success': '#34C759',
-                        'danger': '#FF3B30',
-                        'warning': '#FF9500',
-                        'info': '#5AC8FA',
-                        'dark': '#1C1C1E',
-                    }
-                }
-            }
-        }
-    </script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F2F2F7;
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-gray-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect fixed w-full z-50 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
-                        <span class="text-2xl font-semibold text-primary">NVR</span>
+                        <i class="fas fa-video text-blue-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-semibold">NVR System</span>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="index.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-home mr-2"></i> Dashboard
+                        <a href="index.html" class="border-b-2 border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                            Dashboard
                         </a>
                         <a href="live-stream.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-video mr-2"></i> Live Stream
+                            Live Stream
                         </a>
                         <a href="playback.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-play-circle mr-2"></i> Playback
+                            Playback
                         </a>
                         <a href="settings.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-cog mr-2"></i> Settings
+                            Settings
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <button type="button" class="bg-primary p-1 rounded-full text-white hover:opacity-90 focus:outline-none">
+                    <button type="button" class="bg-blue-600 p-1 rounded-full text-white hover:bg-blue-700 focus:outline-none">
                         <span class="sr-only">View notifications</span>
-                        <i class="fas fa-bell text-lg p-1"></i>
+                        <i class="fas fa-bell"></i>
                     </button>
                 </div>
             </div>
@@ -77,101 +59,57 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Dashboard Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- System Status Card -->
-                <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4" data-status="card">
-                        <h2 class="text-lg font-semibold text-gray-900">System Status</h2>
-                        <span class="px-3 py-1 bg-success bg-opacity-10 text-success rounded-full text-sm" data-status="system-badge">Active</span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">CPU Usage</span>
-                            <span class="text-gray-900" data-status="cpu-usage">--</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Memory Usage</span>
-                            <span class="text-gray-900" data-status="memory-usage">--</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Storage</span>
-                            <span class="text-gray-900" data-status="storage">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Cameras Card -->
-                <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900">Active Cameras</h2>
-                        <span class="text-primary"><i class="fas fa-video"></i></span>
-                    </div>
-                    <div class="text-3xl font-bold text-gray-900 mb-2" data-cameras="active-count">--</div>
-                    <div class="text-sm text-gray-600">Out of <span data-cameras="total-count">--</span> total cameras</div>
-                    <div class="mt-4">
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-primary rounded-full h-2" data-cameras="progress-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Events Card -->
-                <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900">Recent Events</h2>
-                        <span class="text-primary"><i class="fas fa-bell"></i></span>
-                    </div>
-                    <div class="space-y-4" data-events="container">
-                        <!-- Events will be dynamically inserted here -->
-                        <div class="flex items-center justify-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Camera Preview Grid -->
-                <div class="md:col-span-2 lg:col-span-3">
-                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-lg font-semibold text-gray-900">Camera Feeds</h2>
-                            <a href="live-stream.html" class="text-primary hover:underline text-sm">View All</a>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-camera-feeds="grid">
-                            <!-- Camera feeds will be dynamically inserted here -->
-                            <div class="flex items-center justify-center">
-                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900">System Dashboard</h1>
+            <p class="mt-1 text-sm text-gray-600">Monitor your system's status and camera feeds</p>
         </div>
+
+        <!-- System Status Section -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">System Status</h2>
+            <div id="system-status" class="animate-pulse">
+                <!-- System status content will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Cameras Grid Section -->
+        <section class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Active Cameras</h2>
+                <a href="live-stream.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            <div id="cameras-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Camera cards will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Recent Events Section -->
+        <section>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Recent Events</h2>
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    Clear All
+                </button>
+            </div>
+            <div id="events-list">
+                <!-- Event items will be dynamically inserted here -->
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-8">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div class="text-gray-500 text-sm">
-                    © 2023 Network Video Recorder. All rights reserved.
-                </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Privacy Policy</span>
-                        <i class="fas fa-shield-alt"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Support</span>
-                        <i class="fas fa-question-circle"></i>
-                    </a>
-                </div>
-            </div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-4 rounded-lg shadow-lg flex items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+            <span class="text-gray-700">Loading...</span>
         </div>
-    </footer>
-    <!-- JavaScript -->
+    </div>
+
+    <!-- Scripts -->
     <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>

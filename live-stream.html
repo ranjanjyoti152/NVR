@@ -3,66 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Stream - Network Video Recorder</title>
-    <!-- Tailwind CSS via CDN -->
+    <title>NVR System - Live Stream</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Custom CSS -->
+    
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="css/styles.css">
-    <script type="module">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'primary': '#007AFF',
-                        'secondary': '#5856D6',
-                        'success': '#34C759',
-                        'danger': '#FF3B30',
-                        'warning': '#FF9500',
-                        'info': '#5AC8FA',
-                        'dark': '#1C1C1E',
-                    }
-                }
-            }
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
-    </script>
+    </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-gray-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect fixed w-full z-50 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
-                        <span class="text-2xl font-semibold text-primary">NVR</span>
+                        <i class="fas fa-video text-blue-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-semibold">NVR System</span>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                         <a href="index.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-home mr-2"></i> Dashboard
+                            Dashboard
                         </a>
-                        <a href="live-stream.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-video mr-2"></i> Live Stream
+                        <a href="live-stream.html" class="border-b-2 border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                            Live Stream
                         </a>
                         <a href="playback.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-play-circle mr-2"></i> Playback
+                            Playback
                         </a>
                         <a href="settings.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-cog mr-2"></i> Settings
+                            Settings
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="layout-toggle" type="button" class="bg-primary p-2 rounded-full text-white hover:opacity-90 focus:outline-none">
-                        <span class="sr-only">Grid Layout</span>
-                        <i class="fas fa-th-large"></i>
-                    </button>
-                    <button type="button" class="bg-primary p-2 rounded-full text-white hover:opacity-90 focus:outline-none">
+                    <!-- Layout Toggle -->
+                    <div class="flex space-x-2">
+                        <button class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200" title="Grid Layout">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="p-2 rounded-lg text-gray-600 hover:bg-gray-100" title="List Layout">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    <!-- Notification Button -->
+                    <button type="button" class="bg-blue-600 p-1 rounded-full text-white hover:bg-blue-700 focus:outline-none">
                         <span class="sr-only">View notifications</span>
                         <i class="fas fa-bell"></i>
                     </button>
@@ -72,74 +69,46 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-6">
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
                 <h1 class="text-2xl font-semibold text-gray-900">Live Camera Feeds</h1>
-                <div class="flex space-x-3">
-                    <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-                        <i class="fas fa-expand-arrows-alt mr-2"></i>
-                        Full Screen
-                    </button>
-                    <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
-                        <i class="fas fa-plus mr-2"></i>
-                        Add Camera
-                    </button>
-                </div>
+                <p class="mt-1 text-sm text-gray-600">Monitor all your camera feeds in real-time</p>
             </div>
-
-            <!-- Camera Grid Container -->
-            <div class="space-y-6">
-                <!-- Camera Grid -->
-                <div id="camera-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
-                    <!-- Camera cards will be dynamically inserted here by JavaScript -->
-                </div>
-
-                <!-- Loading State -->
-                <div id="loading-state" class="text-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p class="mt-4 text-gray-600">Loading camera feeds...</p>
-                </div>
-
-                <!-- Error State -->
-                <div id="error-state" class="hidden text-center py-12">
-                    <div class="text-danger text-5xl mb-4">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </div>
-                    <p class="text-xl font-medium text-gray-900 mb-2">Failed to Load Cameras</p>
-                    <p class="text-gray-600 mb-4">Please check your connection and try again</p>
-                    <button onclick="window.location.reload()" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none">
-                        <i class="fas fa-redo mr-2"></i>
-                        Retry
-                    </button>
-                </div>
+            <!-- Quick Actions -->
+            <div class="flex space-x-3">
+                <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Refresh All
+                </button>
+                <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Camera
+                </button>
             </div>
+        </div>
+
+        <!-- Camera Grid -->
+        <div id="camera-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Camera cards will be dynamically inserted here -->
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-8">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div class="text-gray-500 text-sm">
-                    © 2023 Network Video Recorder. All rights reserved.
-                </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Privacy Policy</span>
-                        <i class="fas fa-shield-alt"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Support</span>
-                        <i class="fas fa-question-circle"></i>
-                    </a>
-                </div>
-            </div>
+    <!-- Fullscreen Modal -->
+    <div id="fullscreen-modal" class="fixed inset-0 bg-black z-50 hidden">
+        <!-- Fullscreen camera view will be dynamically inserted here -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-4 rounded-lg shadow-lg flex items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+            <span class="text-gray-700">Loading camera feeds...</span>
         </div>
-    </footer>
-    <!-- JavaScript -->
+    </div>
+
+    <!-- Scripts -->
     <script type="module" src="js/live-stream.js"></script>
 </body>
 </html>

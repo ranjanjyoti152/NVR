@@ -1,0 +1,219 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Transitions */
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    border: 0.25rem solid #e5e7eb;
+    border-top-color: #3b82f6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Video Player Custom Styles */
+.video-container:hover .video-controls {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.video-controls {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.timeline {
+    height: 4px;
+    cursor: pointer;
+    transition: height 0.2s ease;
+}
+
+.timeline:hover {
+    height: 6px;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: #e5e7eb;
+    outline: none;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Camera Grid Hover Effects */
+.camera-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.camera-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Settings Form Styles */
+.settings-input:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.settings-checkbox {
+    transition: background-color 0.2s ease;
+}
+
+.settings-checkbox:checked {
+    animation: checkbox-pop 0.2s ease;
+}
+
+@keyframes checkbox-pop {
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Notification Animation */
+@keyframes notification-slide {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification {
+    animation: notification-slide 0.3s ease forwards;
+}
+
+/* Tab Transition */
+.tab-content {
+    transition: opacity 0.3s ease;
+}
+
+.tab-content.hidden {
+    opacity: 0;
+}
+
+/* Button Hover Effects */
+.btn-primary {
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Modal Animation */
+.modal {
+    animation: modal-fade 0.3s ease;
+}
+
+@keyframes modal-fade {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Status Indicators */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-indicator.online {
+    background-color: #10B981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.status-indicator.offline {
+    background-color: #EF4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Progress Bar Animation */
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Card Hover Effects */
+.hover-card {
+    transition: all 0.2s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Responsive Grid */
+@media (max-width: 640px) {
+    .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none;
+    }
+}

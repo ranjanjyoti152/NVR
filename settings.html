@@ -3,362 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Network Video Recorder</title>
-    <!-- Tailwind CSS via CDN -->
+    <title>NVR System - Settings</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script type="module">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'primary': '#007AFF',
-                        'secondary': '#5856D6',
-                        'success': '#34C759',
-                        'danger': '#FF3B30',
-                        'warning': '#FF9500',
-                        'info': '#5AC8FA',
-                        'dark': '#1C1C1E',
-                    }
-                }
-            }
-        }
-    </script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F2F2F7;
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-gray-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect fixed w-full z-50 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
-                        <span class="text-2xl font-semibold text-primary">NVR</span>
+                        <i class="fas fa-video text-blue-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-semibold">NVR System</span>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                         <a href="index.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-home mr-2"></i> Dashboard
+                            Dashboard
                         </a>
                         <a href="live-stream.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-video mr-2"></i> Live Stream
+                            Live Stream
                         </a>
                         <a href="playback.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-play-circle mr-2"></i> Playback
+                            Playback
                         </a>
-                        <a href="settings.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <i class="fas fa-cog mr-2"></i> Settings
+                        <a href="settings.html" class="border-b-2 border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium">
+                            Settings
                         </a>
                     </div>
+                </div>
+                <div class="flex items-center">
+                    <button type="button" class="bg-blue-600 p-1 rounded-full text-white hover:bg-blue-700 focus:outline-none">
+                        <span class="sr-only">View notifications</span>
+                        <i class="fas fa-bell"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-semibold text-gray-900">Settings</h1>
-                <button data-action="save" 
-                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none opacity-50 cursor-not-allowed"
-                        disabled>
-                    <i class="fas fa-save mr-2"></i>
-                    Save Changes
-                </button>
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900">System Settings</h1>
+            <p class="mt-1 text-sm text-gray-600">Configure your cameras and system preferences</p>
+        </div>
+
+        <!-- Settings Tabs -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex">
+                    <button class="tab-button w-1/3 py-4 px-1 text-center border-b-2 border-blue-500 font-medium text-blue-600" data-tab="cameras">
+                        <i class="fas fa-video mr-2"></i>Cameras
+                    </button>
+                    <button class="tab-button w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="recording">
+                        <i class="fas fa-record-vinyl mr-2"></i>Recording
+                    </button>
+                    <button class="tab-button w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="system">
+                        <i class="fas fa-cog mr-2"></i>System
+                    </button>
+                </nav>
             </div>
 
-            <!-- Settings Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Camera Settings -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Camera Configuration -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Camera Configuration</h2>
-                        
-                        <!-- Camera List -->
-                        <div class="space-y-6">
-                            <!-- Camera 1 -->
-                            <div class="border border-gray-200 rounded-lg p-4" data-camera-id="camera-1">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-video text-gray-500 text-xl"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <h3 class="text-sm font-medium text-gray-900">Front Door Camera</h3>
-                                            <p class="text-sm text-success">Connected</p>
-                                        </div>
-                                    </div>
-                                    <button class="text-gray-400 hover:text-gray-500" data-action="camera-menu">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Resolution</label>
-                                        <select data-setting="resolution" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                            <option>1080p</option>
-                                            <option>720p</option>
-                                            <option>480p</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Frame Rate</label>
-                                        <select data-setting="frame-rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                            <option>30 fps</option>
-                                            <option>24 fps</option>
-                                            <option>15 fps</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Motion Detection</label>
-                                        <div class="mt-1">
-                                            <label class="inline-flex items-center">
-                                                <input type="checkbox" data-setting="motion-detection" class="rounded border-gray-300 text-primary focus:ring-primary" checked>
-                                                <span class="ml-2 text-sm text-gray-600">Enable</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Audio Recording</label>
-                                        <div class="mt-1">
-                                            <label class="inline-flex items-center">
-                                                <input type="checkbox" data-setting="audio-recording" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                                <span class="ml-2 text-sm text-gray-600">Enable</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Camera 2 -->
-                            <div class="border border-gray-200 rounded-lg p-4" data-camera-id="camera-2">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-video text-gray-500 text-xl"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <h3 class="text-sm font-medium text-gray-900">Back Yard Camera</h3>
-                                            <p class="text-sm text-success">Connected</p>
-                                        </div>
-                                    </div>
-                                    <button class="text-gray-400 hover:text-gray-500" data-action="camera-menu">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Resolution</label>
-                                        <select data-setting="resolution" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                            <option>1080p</option>
-                                            <option>720p</option>
-                                            <option>480p</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Frame Rate</label>
-                                        <select data-setting="frame-rate" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                            <option>30 fps</option>
-                                            <option>24 fps</option>
-                                            <option>15 fps</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Motion Detection</label>
-                                        <div class="mt-1">
-                                            <label class="inline-flex items-center">
-                                                <input type="checkbox" data-setting="motion-detection" class="rounded border-gray-300 text-primary focus:ring-primary" checked>
-                                                <span class="ml-2 text-sm text-gray-600">Enable</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Audio Recording</label>
-                                        <div class="mt-1">
-                                            <label class="inline-flex items-center">
-                                                <input type="checkbox" data-setting="audio-recording" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                                <span class="ml-2 text-sm text-gray-600">Enable</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recording Settings -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recording Settings</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Storage Location</label>
-                                <div class="mt-1 flex rounded-md shadow-sm">
-                                    <input type="text" data-setting="storage-location" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 focus:ring-primary focus:border-primary" value="/recordings">
-                                    <button data-action="browse" class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm">
-                                        Browse
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Storage Limit</label>
-                                <select data-setting="storage-limit" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                    <option>500 GB</option>
-                                    <option>1 TB</option>
-                                    <option>2 TB</option>
-                                    <option>Unlimited</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Retention Period</label>
-                                <select data-setting="retention-period" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                    <option>7 days</option>
-                                    <option>14 days</option>
-                                    <option>30 days</option>
-                                    <option>90 days</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Recording Schedule</label>
-                                <select data-setting="recording-schedule" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md">
-                                    <option>24/7</option>
-                                    <option>Motion Detection Only</option>
-                                    <option value="custom">Custom Schedule</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Camera Settings -->
+            <div id="cameras-tab" class="tab-content p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold text-gray-700">Camera Configuration</h2>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <i class="fas fa-plus mr-2"></i>Add Camera
+                    </button>
                 </div>
+                <div id="camera-list">
+                    <!-- Camera settings forms will be dynamically inserted here -->
+                </div>
+            </div>
 
-                <!-- System Settings Sidebar -->
-                <div class="space-y-6">
+            <!-- Recording Settings -->
+            <div id="recording-tab" class="tab-content hidden p-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-6">Recording Configuration</h2>
+                <form id="recording-settings-form">
+                    <!-- Storage Settings -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-4">Storage Settings</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Storage Limit (GB)
+                                </label>
+                                <input type="number" name="storageLimit" min="1"
+                                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Retention Period (days)
+                                </label>
+                                <input type="number" name="retentionDays" min="1"
+                                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recording Triggers -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-4">Recording Triggers</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="recordOnMotion"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Record on motion detection</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="scheduleRecording"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Schedule recording</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Recording Schedule -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-4">Recording Schedule</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Start Time
+                                </label>
+                                <input type="time" name="scheduleStart"
+                                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    End Time
+                                </label>
+                                <input type="time" name="scheduleEnd"
+                                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Save Recording Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- System Settings -->
+            <div id="system-tab" class="tab-content hidden p-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-6">System Configuration</h2>
+                <form id="system-settings-form">
+                    <!-- General Settings -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-4">General Settings</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    System Name
+                                </label>
+                                <input type="text" name="systemName"
+                                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Location
+                                </label>
+                                <input type="text" name="location"
+                                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Notification Settings -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Notifications</h2>
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-4">Notification Settings</h3>
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-sm font-medium text-gray-900">Motion Detection</h3>
-                                    <p class="text-sm text-gray-500">Get notified when motion is detected</p>
-                                </div>
-                                <label class="relative inline-flex items-center">
-                                    <input type="checkbox" data-notification="motion" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-sm font-medium text-gray-900">Camera Status</h3>
-                                    <p class="text-sm text-gray-500">Alert when camera goes offline</p>
-                                </div>
-                                <label class="relative inline-flex items-center">
-                                    <input type="checkbox" data-notification="camera-status" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-sm font-medium text-gray-900">Storage Alerts</h3>
-                                    <p class="text-sm text-gray-500">Notify when storage is nearly full</p>
-                                </div>
-                                <label class="relative inline-flex items-center">
-                                    <input type="checkbox" data-notification="storage" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="emailNotifications"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Email notifications</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="pushNotifications"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Push notifications</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="motionAlerts"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Motion detection alerts</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="offlineAlerts"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Camera offline alerts</span>
+                            </label>
                         </div>
                     </div>
 
-                    <!-- System Maintenance -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">System Maintenance</h2>
-                        <div class="space-y-4">
-                            <button data-action="check-updates" class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                <span>Check for Updates</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                            <button data-action="backup" class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                <span>Backup Settings</span>
-                                <i class="fas fa-download"></i>
-                            </button>
-                            <button data-action="view-logs" class="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                <span>System Logs</span>
-                                <i class="fas fa-external-link-alt"></i>
-                            </button>
-                        </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Save System Settings
+                        </button>
                     </div>
-
-                    <!-- About -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">About</h2>
-                        <div class="space-y-2">
-                            <p class="text-sm text-gray-500">Version 1.0.0</p>
-                            <p class="text-sm text-gray-500">© 2023 Network Video Recorder</p>
-                            <a href="#" class="text-sm text-primary hover:text-primary/90">Terms of Service</a>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-8">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div class="text-gray-500 text-sm">
-                    © 2023 Network Video Recorder. All rights reserved.
-                </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Privacy Policy</span>
-                        <i class="fas fa-shield-alt"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Support</span>
-                        <i class="fas fa-question-circle"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Custom Schedule Modal -->
-    <div id="custom-schedule-container" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium">Custom Recording Schedule</h3>
-                <button class="text-gray-400 hover:text-gray-500">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="space-y-4">
-                <!-- Schedule inputs would go here -->
-                <p class="text-gray-500">Schedule configuration coming soon...</p>
-            </div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-4 rounded-lg shadow-lg flex items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+            <span class="text-gray-700">Saving settings...</span>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script type="module" src="js/settings.js"></script>
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Update button states
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('border-blue-500', 'text-blue-600');
+                    btn.classList.add('border-transparent', 'text-gray-500');
+                });
+                button.classList.remove('border-transparent', 'text-gray-500');
+                button.classList.add('border-blue-500', 'text-blue-600');
+                
+                // Show selected tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(`${button.dataset.tab}-tab`).classList.remove('hidden');
+            });
+        });
+    </script>
 </body>
 </html>

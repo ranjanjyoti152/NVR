@@ -1,220 +1,173 @@
-// Import camera service
 import { fetchCameras, retryCamera } from './cameraService.js';
 
-// Function to create a camera card element
-function createCameraCard(camera) {
-    const isOffline = camera.status !== 'live';
-    const cardHtml = `
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow" id="${camera.id}-card">
-            <div class="relative aspect-video bg-gray-900">
-                ${isOffline ? `
-                    <div class="absolute inset-0 flex items-center justify-center bg-gray-200">
-                        <i class="fas fa-video-slash text-4xl text-gray-400"></i>
-                    </div>
-                ` : `
-                    <img src="${camera.streamUrl}" 
-                         alt="${camera.name}"
-                         class="w-full h-full object-cover"
-                         onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'absolute inset-0 flex items-center justify-center bg-gray-200\\'><i class=\\'fas fa-video-slash text-4xl text-gray-400\\'></i></div>';">
-                `}
-                <div class="absolute top-4 left-4">
-                    <span class="flex items-center bg-black/50 rounded-full px-3 py-1 text-white text-sm">
-                        <span class="w-2 h-2 bg-${isOffline ? 'danger' : 'success'} rounded-full mr-2"></span>
-                        ${isOffline ? 'Offline' : 'Live'}
-                    </span>
-                </div>
-                <div class="absolute bottom-4 left-4">
-                    <h3 class="text-white text-lg font-medium">${camera.name}</h3>
-                </div>
-                <div class="absolute top-4 right-4 space-x-2">
-                    ${isOffline ? `
-                        <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="window.retryConnection('${camera.id}')">
-                            <i class="fas fa-redo"></i>
-                        </button>
-                    ` : `
-                        <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="window.toggleFullscreen('${camera.id}')">
-                            <i class="fas fa-expand"></i>
-                        </button>
-                    `}
-                    <button class="bg-black/50 rounded-full p-2 text-white hover:bg-black/70" onclick="window.openSettings('${camera.id}')">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="p-4 border-t border-gray-200">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-2">
-                        <button class="text-gray-500 hover:text-gray-700 ${isOffline ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                ${isOffline ? 'disabled' : ''} onclick="window.toggleMicrophone('${camera.id}')">
-                            <i class="fas fa-microphone-slash"></i>
-                        </button>
-                        <button class="text-gray-500 hover:text-gray-700 ${isOffline ? 'opacity-50 cursor-not-allowed' : ''}" 
-                                ${isOffline ? 'disabled' : ''} onclick="window.toggleAudio('${camera.id}')">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                    </div>
-                    <div class="text-sm ${isOffline ? 'text-danger' : 'text-gray-500'}">
-                        ${isOffline ? 'Connection Failed' : `${camera.resolution} • ${camera.fps}`}
-                    </div>
-                </div>
-            </div>
+// DOM Elements
+const cameraGridEl = document.getElementById('camera-grid');
+const fullscreenModalEl = document.getElementById('fullscreen-modal');
+const loadingOverlay = document.getElementById('loading-overlay');
+
+// State
+let cameras = [];
+let activeFullscreenCamera = null;
+
+// Constants
+const CAMERA_REFRESH_INTERVAL = 5000; // 5 seconds
+
+// Show/hide loading overlay
+const toggleLoading = (show) => {
+    loadingOverlay.style.display = show ? 'flex' : 'none';
+};
+
+// Show error message
+const showError = (message) => {
+    const errorEl = document.createElement('div');
+    errorEl.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50';
+    errorEl.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <p>${message}</p>
         </div>
     `;
-    return cardHtml;
-}
+    document.body.appendChild(errorEl);
+    setTimeout(() => errorEl.remove(), 5000);
+};
 
-// Function to initialize the camera grid
-async function initializeCameraGrid() {
-    const gridContainer = document.getElementById('camera-grid');
-    const loadingState = document.getElementById('loading-state');
-    const errorState = document.getElementById('error-state');
+// Show success message
+const showSuccess = (message) => {
+    const successEl = document.createElement('div');
+    successEl.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50';
+    successEl.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <p>${message}</p>
+        </div>
+    `;
+    document.body.appendChild(successEl);
+    setTimeout(() => successEl.remove(), 5000);
+};
 
-    if (!gridContainer) return;
-
-    try {
-        // Show loading state
-        loadingState.classList.remove('hidden');
-        errorState.classList.add('hidden');
-        gridContainer.classList.add('hidden');
-
-        // Fetch cameras from service
-        const cameras = await fetchCameras();
-        
-        // Create and insert camera cards
-        const cameraCards = cameras.map(camera => createCameraCard(camera)).join('');
-        gridContainer.innerHTML = cameraCards;
-
-        // Hide loading state, show grid
-        loadingState.classList.add('hidden');
-        gridContainer.classList.remove('hidden');
-    } catch (error) {
-        console.error('Failed to initialize camera grid:', error);
-        loadingState.classList.add('hidden');
-        errorState.classList.remove('hidden');
-    }
-}
-
-// Function to toggle fullscreen for a camera
-function toggleFullscreen(cameraId) {
-    const cameraElement = document.getElementById(`${cameraId}-card`);
-    if (!cameraElement) return;
-
-    if (!document.fullscreenElement) {
-        cameraElement.requestFullscreen().catch(err => {
-            console.error(`Error attempting to enable fullscreen: ${err.message}`);
-        });
-    } else {
-        document.exitFullscreen();
-    }
-}
-
-// Function to retry connection for offline cameras
-async function retryConnection(cameraId) {
-    const card = document.getElementById(`${cameraId}-card`);
-    if (!card) return;
-
-    const statusElement = card.querySelector('.bg-danger');
-    const statusText = card.querySelector('.flex.items-center span:last-child');
-    
-    if (statusElement && statusText) {
-        statusElement.classList.remove('bg-danger');
-        statusElement.classList.add('bg-warning');
-        statusText.textContent = 'Connecting...';
-    }
-
+// Handle camera retry
+const handleRetry = async (cameraId) => {
     try {
         const result = await retryCamera(cameraId);
         if (result.success) {
-            // Refresh the entire camera grid to show updated status
-            await initializeCameraGrid();
+            showSuccess('Camera reconnected successfully');
+            await updateCameras(); // Refresh the camera list
         } else {
-            throw new Error('Failed to reconnect camera');
+            showError('Failed to reconnect camera');
         }
     } catch (error) {
-        console.error('Failed to retry camera connection:', error);
-        if (statusElement && statusText) {
-            statusElement.classList.remove('bg-warning');
-            statusElement.classList.add('bg-danger');
-            statusText.textContent = 'Offline';
-        }
+        showError('Error reconnecting camera');
+        console.error('Camera retry error:', error);
     }
-}
+};
 
-// Function to toggle microphone
-function toggleMicrophone(cameraId) {
-    const button = document.querySelector(`#${cameraId}-card .fa-microphone-slash, #${cameraId}-card .fa-microphone`);
-    if (button) {
-        button.classList.toggle('fa-microphone-slash');
-        button.classList.toggle('fa-microphone');
+// Toggle fullscreen mode for a camera
+const toggleFullscreen = (camera) => {
+    if (activeFullscreenCamera === camera) {
+        fullscreenModalEl.style.display = 'none';
+        activeFullscreenCamera = null;
+    } else {
+        activeFullscreenCamera = camera;
+        fullscreenModalEl.innerHTML = `
+            <div class="bg-black h-full relative">
+                <button onclick="document.getElementById('fullscreen-modal').style.display='none'" 
+                        class="absolute top-4 right-4 text-white hover:text-gray-300">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="flex items-center justify-center h-full">
+                    <div class="w-full max-w-6xl mx-4">
+                        <div class="relative pt-[56.25%]">
+                            <img src="${camera.streamUrl}" 
+                                 alt="${camera.name}"
+                                 class="absolute top-0 left-0 w-full h-full object-contain">
+                        </div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h3 class="text-xl font-semibold">${camera.name}</h3>
+                            <p class="text-sm opacity-75">
+                                ${camera.resolution} | ${camera.fps}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        fullscreenModalEl.style.display = 'block';
     }
-}
+};
 
-// Function to toggle audio
-function toggleAudio(cameraId) {
-    const button = document.querySelector(`#${cameraId}-card .fa-volume-up, #${cameraId}-card .fa-volume-mute`);
-    if (button) {
-        button.classList.toggle('fa-volume-up');
-        button.classList.toggle('fa-volume-mute');
+// Update camera grid
+const updateCameras = async () => {
+    try {
+        cameras = await fetchCameras();
+        
+        cameraGridEl.innerHTML = cameras.map(camera => `
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="relative">
+                    <div class="relative pt-[56.25%]">
+                        <img src="${camera.streamUrl}" 
+                             alt="${camera.name}"
+                             class="absolute top-0 left-0 w-full h-full object-cover cursor-pointer"
+                             onclick="toggleFullscreen(${JSON.stringify(camera).replace(/"/g, '&quot;')})">
+                    </div>
+                    <div class="absolute top-2 right-2 flex space-x-2">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                   ${camera.status === 'live' ? 'bg-green-500' : 'bg-red-500'} 
+                                   text-white">
+                            ${camera.status.toUpperCase()}
+                        </span>
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-800 text-white">
+                            ${camera.resolution}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-semibold text-gray-700">${camera.name}</h3>
+                        <div class="flex space-x-2">
+                            ${camera.status === 'offline' ? `
+                                <button onclick="handleRetry('${camera.id}')"
+                                        class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="toggleFullscreen(${JSON.stringify(camera).replace(/"/g, '&quot;')})"
+                                    class="text-gray-600 hover:text-gray-800">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <p>FPS: ${camera.fps}</p>
+                        <p>Last Updated: ${new Date(camera.lastUpdated).toLocaleString()}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        showError('Failed to update cameras');
+        console.error('Cameras update error:', error);
     }
-}
+};
 
-// Function to open settings modal
-function openSettings(cameraId) {
-    // In a real implementation, this would open a settings modal
-    console.log(`Opening settings for camera ${cameraId}`);
-}
+// Initialize live stream page
+const initLiveStream = async () => {
+    toggleLoading(true);
+    try {
+        await updateCameras();
+        
+        // Set up refresh interval
+        setInterval(updateCameras, CAMERA_REFRESH_INTERVAL);
+        
+        // Make functions available globally for onclick handlers
+        window.handleRetry = handleRetry;
+        window.toggleFullscreen = toggleFullscreen;
+    } catch (error) {
+        showError('Failed to initialize live stream');
+        console.error('Live stream initialization error:', error);
+    } finally {
+        toggleLoading(false);
+    }
+};
 
-// Initialize grid layout options
-function initializeLayoutControls() {
-    const layoutButton = document.getElementById('layout-toggle');
-    if (!layoutButton) return;
-
-    layoutButton.addEventListener('click', () => {
-        const grid = document.getElementById('camera-grid');
-        if (!grid) return;
-
-        // Toggle between different grid layouts
-        const currentCols = grid.classList.toString().match(/grid-cols-(\d+)/);
-        if (currentCols) {
-            const cols = parseInt(currentCols[1]);
-            grid.classList.remove(`grid-cols-${cols}`);
-            grid.classList.add(`grid-cols-${cols === 2 ? 3 : cols === 3 ? 4 : 2}`);
-        }
-    });
-}
-
-// Make functions available globally for onclick handlers
-window.toggleFullscreen = toggleFullscreen;
-window.retryConnection = retryConnection;
-window.toggleMicrophone = toggleMicrophone;
-window.toggleAudio = toggleAudio;
-window.openSettings = openSettings;
-
-// Initialize when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    initializeCameraGrid();
-    initializeLayoutControls();
-});
-
-// Handle window resize for responsive layout
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        const grid = document.getElementById('camera-grid');
-        if (!grid) return;
-
-        // Adjust grid columns based on window width
-        const width = window.innerWidth;
-        grid.classList.remove('grid-cols-2', 'grid-cols-3', 'grid-cols-4');
-        if (width < 768) {
-            grid.classList.add('grid-cols-1');
-        } else if (width < 1024) {
-            grid.classList.add('grid-cols-2');
-        } else if (width < 1280) {
-            grid.classList.add('grid-cols-3');
-        } else {
-            grid.classList.add('grid-cols-4');
-        }
-    }, 250);
-});
+// Start the live stream when DOM is loaded
+document.addEventListener('DOMContentLoaded', initLiveStream);
